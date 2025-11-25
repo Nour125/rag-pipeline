@@ -1,0 +1,16 @@
+# Python
+rag-backend-env/
+__pycache__/
+*.pyc
+
+# Node / React
+frontend/node_modules/
+frontend/dist/
+
+# Env & config
+.env
+backend/.env
+*.log
+
+# VSCode
+.vscode/
