@@ -3,6 +3,9 @@ from pathlib import Path
 from typing import List, Dict
 from pypdf import PdfReader
 from typing import Any, List, Dict
+
+from backend.app.preprocessing.pdf_preprocessor import preprocess_pdf
+
 @dataclass
 class TextChunk:
     """
@@ -141,6 +144,7 @@ def chunk_text(
 
     return chunks
 
+'''
 def chunk_pdf_document(
     document_id: str,
     pdf_path: Path,
@@ -186,6 +190,42 @@ def chunk_pdf_document(
 
     return all_chunks
 
+'''
+
+def chunk_pdf_document_with_preprocessing(
+    document_id: str,
+    pdf_path: Path,
+    chunk_size_words: int = 220,
+    chunk_overlap_words: int = 40,
+) -> List[Dict]:
+    """
+    Kombiniert Preprocessing (Layout + Bildcaptions) mit deinem bestehenden Chunking.
+    """
+    preprocessed_text = preprocess_pdf(pdf_path, language="en")
+
+    chunks = chunk_text(
+        document_id=document_id,
+        text=preprocessed_text,
+        chunk_size_words=chunk_size_words,
+        chunk_overlap_words=chunk_overlap_words,
+    )
+
+    result: List[Dict] = []
+    for i, chunk in enumerate(chunks):
+        result.append(
+            {
+                "id": chunk.id,
+                "document_id": chunk.document_id,
+                "page": None,  # optional, könntest du später aus [PAGE x] Tags ableiten
+                "chunk_index": chunk.chunk_index,
+                "global_chunk_id": i,
+                "content": chunk.content,
+                "start_char": chunk.start_char,
+                "end_char": chunk.end_char,
+            }
+        )
+    return result
+
 
 def chunk_all_pdfs_in_folder(
     folder: Path,
@@ -200,7 +240,7 @@ def chunk_all_pdfs_in_folder(
     for pdf_path in folder.glob("*.pdf"):
         document_id = pdf_path.stem  # z.B. "food_allergy_guide"
         print(f"Processing PDF: {pdf_path.name}")
-        doc_chunks = chunk_pdf_document(
+        doc_chunks = chunk_pdf_document_with_preprocessing(
             document_id=document_id,
             pdf_path=pdf_path,
             chunk_size_words=chunk_size_words,

@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict, Any, Optional
-
+from typing import List, Dict, Any
+from backend.app.models.image_captioner import caption_image_with_qwen_vl
 import fitz  # PyMuPDF
-from pypdf import PdfReader
 
 
 @dataclass
@@ -122,3 +121,123 @@ def remove_unnecessary_elements(layout_pages: List[PageLayout]) -> List[PageLayo
         )
 
     return cleaned_pages
+
+def generate_image_descriptions(
+    images: List[ImageRegion],
+    *,
+    language: str = "en",
+) -> Dict[str, str]:
+    """
+    Generates a textual description for each image using LM Studio (e.g. qwen/qwen3-vl-4b).
+
+    Args:
+        images: List of ImageRegion objects extracted from the PDF layout.
+        language: 'en' or 'de' language of the generated captions.
+
+    Returns:
+        Mapping from image_id (ImageRegion.id) to description text.
+    """
+    id_to_caption: Dict[str, str] = {}
+
+    for img in images:
+        try:
+            caption = caption_image_with_qwen_vl(
+                image_bytes=img.image_bytes,
+                model="qwen/qwen3-vl-4b",
+                language=language,
+                max_tokens=512,
+            )
+        except Exception as e:
+            # Fallback wenn etwas schiefgeht
+            caption = f"[Image description unavailable: {e}]"
+
+        id_to_caption[img.id] = caption
+
+    return id_to_caption
+
+def merge_text_and_image_descriptions(
+    layout_pages: List[PageLayout],
+    image_captions: Dict[str, str],
+) -> str:
+    """
+    Simpler Ansatz:
+    - Für jede Seite werden Bild-Regionen in künstliche TextBlöcke mit Caption umgewandelt.
+    - Am Ende hat jede Seite nur noch TextBlöcke.
+    - Diese werden nach y-Koordinate sortiert und zu Fließtext zusammengefügt.
+    """
+
+    all_doc_lines: List[str] = []
+
+    # Seiten in Reihenfolge
+    for layout in sorted(layout_pages, key=lambda lp: lp.page_number):
+        # 1) Ausgangspunkt: vorhandene Textblöcke
+        combined_blocks: List[TextBlock] = list(layout.text_blocks)
+
+        # 2) Für jedes Bild einen TextBlock einfügen
+        for img in layout.images:
+            caption = image_captions.get(img.id)
+
+            if caption:
+                text = f"[IMAGE: {caption}]"
+            else:
+                text = "[IMAGE: No description available]"
+
+            # künstlicher TextBlock an Position des Bildes
+            caption_block = TextBlock(
+                page=img.page,
+                bbox=img.bbox,
+                text=text,
+            )
+            combined_blocks.append(caption_block)
+
+        # 3) Sortieren nach y0 = vertikale Position
+        combined_blocks.sort(key=lambda b: b.bbox[1])  # bbox = (x0, y0, x1, y1)
+
+        # 4) Text der Seite bauen
+        page_lines = [block.text for block in combined_blocks if block.text.strip()]
+        page_text = "\n".join(page_lines).strip()
+
+        if page_text:
+            all_doc_lines.append(f"[PAGE {layout.page_number}]")
+            all_doc_lines.append(page_text)
+
+    # 5) Alles zu einem Dokument-String
+    return "\n\n".join(all_doc_lines)
+
+
+def preprocess_pdf(
+    pdf_path: Path,
+    *,
+    language: str = "en",
+) -> str:
+    """
+    Full preprocessing pipeline for a PDF:
+    1) Layout detection (text blocks + images)
+    2) Remove unnecessary/boilerplate text elements
+    3) Generate image descriptions via LM Studio
+    4) Merge text and image descriptions into a single text string
+    """
+    # 1) Layout-Analyse
+    layouts = analyze_pdf_layout(pdf_path)
+
+    # 2) Boilerplate entfernen
+    cleaned_layouts = remove_unnecessary_elements(layouts)
+
+    # 3) Alle Bilder einsammeln
+    all_images: List[ImageRegion] = []
+    for layout in cleaned_layouts:
+        all_images.extend(layout.images)
+
+    # 4) Bildbeschreibungen erzeugen
+    image_captions = generate_image_descriptions(
+        images=all_images,
+        language=language,
+    )
+
+    # 5) Text + Bildbeschreibungen zusammenführen
+    merged_text = merge_text_and_image_descriptions(
+        layout_pages=cleaned_layouts,
+        image_captions=image_captions,
+    )
+
+    return merged_text

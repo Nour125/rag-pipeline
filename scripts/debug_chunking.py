@@ -11,9 +11,16 @@ def main():
     )
 
     print(f"Total chunks: {len(chunks)}")
-    # Print first 3 chunks as sample
-    for chunk in chunks[:3]:
-        print(chunk)
+
+    with open("Output.txt", "w", encoding="utf-8") as f:
+        for c in chunks:
+            f.write(f"CHUNK ID: {c['id']}\n")
+            f.write(f"DOC: {c['document_id']}\n")
+            f.write(f"CONTENT:\n{c['content']}\n")
+            f.write("-" * 50 + "\n\n")
+
+    # for chunk in chunks[:3]:
+    #     print(chunk)
         
 
 if __name__ == "__main__":
