@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Dict, Any
-from backend.app.models.image_captioner import caption_image_with_qwen_vl
+from app.models.image_captioner import caption_image_with_qwen_vl
 import fitz  # PyMuPDF
 
 

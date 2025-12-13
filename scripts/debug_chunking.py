@@ -1,5 +1,5 @@
 from pathlib import Path
-from backend.app.utils.chunker import chunk_all_pdfs_in_folder
+from app.utils.chunker import chunk_all_pdfs_in_folder
 
 def main():
     pdf_folder = Path("data")

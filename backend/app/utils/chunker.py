@@ -4,7 +4,7 @@ from typing import List, Dict
 from pypdf import PdfReader
 from typing import Any, List, Dict
 
-from backend.app.preprocessing.pdf_preprocessor import preprocess_pdf
+from app.preprocessing.pdf_preprocessor import preprocess_pdf
 
 @dataclass
 class TextChunk:

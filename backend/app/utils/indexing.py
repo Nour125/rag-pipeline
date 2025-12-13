@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional
 import numpy as np
 import faiss
 
-from backend.app.models.embedder_loader import LMStudioEmbedder
+from app.models.embedder_loader import LMStudioEmbedder
 
 
 def _l2_normalize(x: np.ndarray) -> np.ndarray:
