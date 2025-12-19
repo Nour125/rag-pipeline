@@ -30,7 +30,7 @@ def caption_image_with_qwen_vl(
     *,
     model: str = "qwen/qwen3-vl-4b",
     language: str = "en",
-    max_tokens: int = 512,
+    max_tokens: int = 220, # TODO chaining
 ) -> str:
     """
     Sends an image to LM Studio (Qwen3-VL) and asks for a detailed description.
