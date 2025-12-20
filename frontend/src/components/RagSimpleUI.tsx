@@ -1,5 +1,6 @@
 import { useState } from "react" 
 import { apiClient } from "../api/client" 
+import {marked} from 'marked';
 
 export type RAGSource = {
   score: number 
@@ -33,7 +34,7 @@ export function RagSimpleUI() {
         question,
         top_k: topK,
       }) 
-      setResult(res.data) 
+      setResult(res.data)
     } catch (e: any) {
       setError(
         e?.response?.data?.detail ??
@@ -44,6 +45,7 @@ export function RagSimpleUI() {
       setLoading(false) 
     }
   }
+  const htmlContent = marked(result?.answer ?? "null");
 
   return (
     <div style={{ maxWidth: 900, margin: "24px auto", padding: 16 }}>
@@ -134,7 +136,8 @@ export function RagSimpleUI() {
         >
           <h2 style={{ marginTop: 0 }}>Answer</h2>
           <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.4 }}>
-            {result.answer}
+            
+            <div style={{textAlign: "left"}} dangerouslySetInnerHTML={{ __html: htmlContent }} />
           </div>
         </div>
       )}
