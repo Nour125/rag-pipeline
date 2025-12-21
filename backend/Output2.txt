@@ -1,0 +1,79 @@
+CHUNK ID: foo-p1-c0
+DOC: foo
+CONTENT:
+Abbreviations: AO 5 Association for the Study of Internal Fixation AVN 5 avascular necrosis DRUJ 5 distal radiolunar joint PA 5 posteroanterior TFC 5 triangular ﬁbrocartilage TFCC 5 TFC complex
+1 From the Mallinckrodt Institute of Ra- diology, Washington University School of Medicine, 510 S Kingshighway Blvd, St Louis, MO 63110 (Y.Y., L.A.G.); the Department of Orthopaedic Surgery, Washington University Medical School, St Louis, Mo (C.A.G., M.I.B.); and Radi- ology Imaging Associates, Englewood, Colo (A.J.F.). Received March 23, 1999; revision requested May 21; revision re- ceived December 28; accepted Febru- ary 1, 2000. Address correspondence to L.A.G. (e-mail: gilulal@mir.wustl.edu).
+With the recent improvements in diagnosis and treatment of distal radius and carpal injuries, the hand surgeons’ expectations of relevant radiologic interpretation of imaging studies are heightened. Conventional radiographic examinations, as well as more sophisticated and invasive studies, have important roles in the evaluation of wrist fractures and dislocations. On the basis of physical examination results and the mechanism of injury, the onus is on the examining surgeon to pinpoint potential sites of bone or ligament disruption. After this evaluation, appropriate imaging studies appropriately performed and interpreted will help direct treatment and improve outcome with greater clarity and certainty.
+PAGE ID: 1
+WORDCOUNT: 198
+START BLOCK INDEX: 0
+END BLOCK INDEX: 2
+--------------------------------------------------
+
+CHUNK ID: foo-p1-c1
+DOC: foo
+CONTENT:
+While the orthopedic surgeon and the emergency medicine physician initially evaluate injuries of the wrist, which includes the distal radius, distal ulna, carpal bones, and metacarpal bases, it is the radiologist who conﬁrms a clinical suspicion of injury and further characterizes the nature of this injury. To seamlessly integrate care, the radiologist must possess an understanding of the factors that alter clinical decision making and patient treatment. The radiologic report should, therefore, contain all the information a clinical colleague requires to determine patient disposition and should use language common to both specialties. Full evaluation requires more than simple fracture detection and description. Pertinent ancillary ﬁndings and negative radiographic ﬁndings that factor into clinical algorithms must be addressed. It is important that radiographs be inspected with the knowledge of injury mechanism as it relates to future care, potential fracture complications, and con- sequent implications.
+Fractures of the distal radius account for an estimated 17% of fractures seen acutely in the emergency department (1). These injuries occur most commonly among elderly women with osteoporosis, typically because of a fall onto an outstretched hand. Younger patients may also sustain distal radius fractures, often caused by a high-energy mechanism such as a motor vehicle accident, and these patients may have additional orthopedic injuries. Despite the high frequency of these fractures, indications for surgical intervention and the method of treatment remain somewhat subjective. Although results from numerous clinical and laboratory studies (2–6) have aided the understanding of these complex injuries, further investigation is necessary. The goal in treating distal radius fractures is the rapid restoration of function, with attention given to the prevention of chronic disability. This involves diagnosis, appropri- ate intervention, and postintervention rehabilitation. The key element in the treatment algorithm is the development of a functional understanding of the injury, beginning with an appreciation of the local anatomy, injury pattern, and associated injuries.
+PAGE ID: 1
+WORDCOUNT: 310
+START BLOCK INDEX: 3
+END BLOCK INDEX: 4
+--------------------------------------------------
+
+CHUNK ID: foo-p1-c2
+DOC: foo
+CONTENT:
+Both the radiocarpal articulation and the distal radioulnar joint (DRUJ) must be con- sidered when evaluating fractures of the distal radius. The distal radius has three concave surfaces: the scaphoid and lunate fossae, which articulate with the named carpal bones, and the sigmoid notch, which articulates with the ulna at the DRUJ (Fig 1). The metaphy- seal widening of the distal radius begins approximately 2 cm proximal to the radiocarpal joint. Distal to this broadening, the amount of cortical bone decreases, and the corre-
+PAGE ID: 1
+WORDCOUNT: 84
+START BLOCK INDEX: 5
+END BLOCK INDEX: 5
+--------------------------------------------------
+
+CHUNK ID: foo-p2-c3
+DOC: foo
+CONTENT:
+sponding amount of weaker cancellous bone increases, forming a zone predis- posed to fracture. The DRUJ consists of the concave sig- moid notch of the distal radius, the distal ulna, and the supporting capsuloliga- mentous structures. It is supported by the structures of the triangular ﬁbrocartilage complex (TFCC), which includes a ﬁ- brous meniscus-like structure (the trian- gular ﬁbrocartilage [TFC]), which runs from the sigmoid notch to the ulnar styloid and the surrounding soft-tissue attachments. The TFCC supports the ar- ticulation of the distal ulna with both the lunate and triquetrum. Ulnar-sided wrist pain in the absence of radiographic evi- dence of fracture must raise the suspicion of an injury to the TFCC. The radiocarpal and the intercarpal articulations are sup- ported by the radiocarpal ligaments, and the origins and insertions of these liga- ments must be considered when evaluat- ing fractures of the distal radius or carpus (8) (Fig 2).
+A radiographic survey of the distal ra- dius and ulna can be accomplished with simple posteroanterior (PA) and lateral views; however, we recommend a four- view series for a more complete evalua- tion of the wrist. This includes PA and lateral views, an external oblique projec- tion, and a PA view with the wrist in ulnar deviation. An external oblique view is obtained with the radial side of the wrist elevated at a 30° angle off the table or ﬁlm screen, with the ulnar side of the hand and wrist on the table. The ex- ternal oblique view is the only one of these survey views that demonstrates the trapeziotrapezoidal joint; it also demon- strates the waist of the scaphoid. Place- ment of the wrist in ulnar deviation while in the PA position elongates the scaphoid and helps improve detection of subtle scaphoid fractures (10). Standard- ized positioning and high-quality radio- graphs must be obtained for optimal evaluation at the time of injury and sub- sequent follow-up. We prefer to perform a three-view examination of the wrist at follow-up when the wrist is in a cast, without obtaining the ulnar-deviated PA view. It could be argued that only PA and lateral views should be obtained at fol- low-up, but follow-up studies to show the entire wrist on four views whenever pos- sible will enable detection of additional abnormalities not shown at ﬁrst. Exam- ples of this would be a developing scapholunate dissociation, an increasing
+PAGE ID: 2
+WORDCOUNT: 395
+START BLOCK INDEX: 0
+END BLOCK INDEX: 1
+--------------------------------------------------
+
+CHUNK ID: foo-p2-c4
+DOC: foo
+CONTENT:
+fracture-fragment displacement, and de- tection of additional fractures or dis- placements not seen originally. A standard PA view of the wrist should proﬁle the extensor carpi ulnaris tendon groove, which should be at the level of or radial to the base of the ulnar styloid (11). A true lateral view is deﬁned by a scaphopisocapitate relationship (12). On a standard lateral view, the palmar cortex of the pisiform bone should overlie the central third of the interval between the palmar cortices of the distal scaphoid pole and the capitate head (Fig 3). These two criteria provide an objective measure of true standard PA and lateral views. When evaluating radiographs in pa- tients with a high potential for a fracture, the bone cortices must be carefully eval- uated for evidence of discontinuity. One must evaluate both the PA and the lateral views because a subtle fracture may be apparent on only one view (Fig 4). On the PA view, cortices of the scaphoid, lunate, and sigmoid fossae of the distal radius should be carefully examined for cortical offset. On the lateral view, all cortical structures, including the distal radius, the ulna, the carpal bones, and the metacarpal cortices, should be exam- ined carefully for cortical break. Soft-tis- sue swelling must also be carefully as- sessed. With focal swelling, close observation of underlying cortices may show a fracture or subluxation. The distal ulna should also be closely evaluated when a distal radioul- nar subluxation or dislocation is consid- ered.
+PAGE ID: 2
+WORDCOUNT: 247
+START BLOCK INDEX: 2
+END BLOCK INDEX: 2
+--------------------------------------------------
+
+CHUNK ID: foo-p2-c5
+DOC: foo
+CONTENT:
+With fracture comminution, displace- ment, or complex intraarticular exten- sion, radiography may be insufﬁcient and computed tomography (CT) is war- ranted. CT should be performed if con- ventional radiographs provide insufﬁ- cient detail and, speciﬁcally, when a detailed evaluation is needed of radiocar- pal articular step-off and gap displace- ment—factors crucial in predicting the development of radiocarpal osteoarthri- tis (2,13). CT of the distal radius, ulna, and car- pus can be performed in several planes. CT in the transverse plane is often used to evaluate the distal radioulnar joint and the carpal bones or to further assess a longitudinal fracture. The coronal plane provides an image similar to the standard PA radiograph but will provide better soft-tissue and bone detail than will a routine radiograph. Coronal CT also demonstrates the radiocarpal joint well. The oblique sagittal plane in the long axis of the scaphoid was developed to better assess the scaphoid. The wrist is pronated and the scans are obtained along a line between the base of the thumb and the Lister tubercle (dorsal tu- bercle of radius) (14). In subtle cases of distal radioulnar subluxation, a compar- ison of transverse CT images of both wrists in the neutral, prone, and supine positions or in any position that repro- duces the patient’s pain may be helpful (14). In general, 2-mm-thick sections at 2-mm intervals will be satisfactory to show the anatomic detail of distal radius
+PAGE ID: 2
+WORDCOUNT: 235
+START BLOCK INDEX: 3
+END BLOCK INDEX: 3
+--------------------------------------------------
+
+CHUNK ID: foo-p2-c6
+DOC: foo
+CONTENT:
+Figure 1. Anatomic diagram shows the radiocarpal joint with fossae to articulate with the scaphoid (scaphoid fossa) (arrow), lunate (lunate fossa) (arrowhead), and ulnar side of the carpus. (Modiﬁed and reprinted, with permission, from reference 7.)
+[IMAGE: This image is a detailed anatomical illustration, rendered in black and white, depicting the complex ligamentous and cartilaginous structures of the wrist joint, specifically the radiocarpal joint. The illustration is presented in a cross-sectional view, showing the internal anatomy as if the skin and surrounding tissues have been removed to reveal the underlying structures.
+
+The central focus is a rectangular, shaded area that represents the radiocarpal joint. Within this area, several anatomical components are labeled with lines and text. These include the Scapholunate Ligament, which connects the scaphoid and lunate bones; the Radioscaphocapitate Ligament, which connects the radius to the scaphoid and capitate; the Radiolunate Ligament, connecting the radius to the lunate; and the Radioscapholunate Ligament, which connects the radius to the scaphoid and lunate. Additionally, the image labels the Lunotriquetral Ligament, the Ulnotriquetral Ligament, the Ulnolunate Ligament, and the Triangular Fibrocartilage Complex (TFCC), which is a key structure in the wrist that provides stability and cushioning.
+
+The illustration also shows the bones of the wrist and hand, including the scaphoid, lunate, capitate, and triquetral bones, as well as the radius and ulna, which are the two main bones of the forearm. The bones are depicted with]
+PAGE ID: 2
+WORDCOUNT: 233
+START BLOCK INDEX: 4
+END BLOCK INDEX: 5
+--------------------------------------------------
+

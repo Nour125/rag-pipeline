@@ -30,7 +30,7 @@ def caption_image_with_qwen_vl(
     *,
     model: str = "qwen/qwen3-vl-4b",
     language: str = "en",
-    max_tokens: int = 220, # TODO chaining
+    max_tokens: int = 220,
 ) -> str:
     """
     Sends an image to LM Studio (Qwen3-VL) and asks for a detailed description.
@@ -52,7 +52,7 @@ def caption_image_with_qwen_vl(
             "Beschreibe dieses Bild sehr detailliert. "
             "Erkläre, was darauf zu sehen ist, welche Personen, Objekte oder "
             "Situationen dargestellt sind und welche Aussage das Bild im Kontext "
-            "von Nahrungsmittelallergien haben könnte. "
+
             "Nutze vollständige Sätze und vermeide Spekulationen, wenn die Informationen "
             "nicht aus dem Bild hervorgehen."
         )
@@ -60,7 +60,7 @@ def caption_image_with_qwen_vl(
         user_instruction = (
             "Describe this image in a detailed way. "
             "Explain what is visible, which people, objects or scenes are shown, "
-            "and what the image might convey in the context of food allergies. "
+            "and what the image might convey in the context  "
             "Use full sentences and avoid speculation if the information is not visible."
         )
 
@@ -104,4 +104,4 @@ def caption_image_with_qwen_vl(
                     return text.strip()
 
     # Fallback: alles als String zusammenbauen
-    return str(msg_content)
+    return str(msg_content)  #TODO vllt das weg machen und den msg_content returnen

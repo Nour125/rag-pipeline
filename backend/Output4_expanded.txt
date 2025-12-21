@@ -1,0 +1,30 @@
+CHUNK ID: foo.pdf-p1-b4-s0
+DOC: foo.pdf
+PARENT BLOCK ID: 1004
+CONTENT:
+Fractures of the distal radius account for an estimated 17% of fractures seen acutely in the emergency department (1). These injuries occur most commonly among elderly women with osteoporosis, typically because of a fall onto an outstretched hand. Younger patients may also sustain distal radius fractures, often caused by a high-energy mechanism such as a motor vehicle accident, and these patients may have additional orthopedic injuries. Despite the high frequency of these fractures, indications for surgical intervention and the method of treatment remain somewhat subjective. Although results from numerous clinical and laboratory studies (2–6) have aided the understanding of these
+PAGE ID: 1
+WORDCOUNT: 100
+SPLITED: True
+--------------------------------------------------
+
+CHUNK ID: foo.pdf-p1-b4-s1
+DOC: foo.pdf
+PARENT BLOCK ID: 1004
+CONTENT:
+of treatment remain somewhat subjective. Although results from numerous clinical and laboratory studies (2–6) have aided the understanding of these complex injuries, further investigation is necessary. The goal in treating distal radius fractures is the rapid restoration of function, with attention given to the prevention of chronic disability. This involves diagnosis, appropri- ate intervention, and postintervention rehabilitation. The key element in the treatment algorithm is the development of a functional understanding of the injury, beginning with an appreciation of the local anatomy, injury pattern, and associated injuries.
+PAGE ID: 1
+WORDCOUNT: 87
+SPLITED: True
+--------------------------------------------------
+
+CHUNK ID: foo.pdf-p1-b4-s2
+DOC: foo.pdf
+PARENT BLOCK ID: 1004
+CONTENT:
+local anatomy, injury pattern, and associated injuries.
+PAGE ID: 1
+WORDCOUNT: 7
+SPLITED: True
+--------------------------------------------------
+

@@ -10,6 +10,8 @@ class TextBlock:
     page: int
     bbox: Any  # (x0, y0, x1, y1) – kannst später typisieren
     text: str
+    block_type: str # 0 = text, 1 = image, etc.
+    wordcount: int
 
 
 @dataclass
@@ -41,7 +43,7 @@ def analyze_pdf_layout(pdf_path: Path) -> List[PageLayout]:
         # Text blocks
         text_blocks: List[TextBlock] = []
         for block in page.get_text("blocks"):
-            x0, y0, x1, y1, text, *_ = block
+            x0, y0, x1, y1, text, _ , block_type = block
             cleaned = " ".join(text.split())
             if cleaned.strip():
                 text_blocks.append(
@@ -49,6 +51,8 @@ def analyze_pdf_layout(pdf_path: Path) -> List[PageLayout]:
                         page=page_number,
                         bbox=(x0, y0, x1, y1),
                         text=cleaned,
+                        block_type=block_type,
+                        wordcount=len(cleaned.split()),
                     )
                 )
 
@@ -87,31 +91,22 @@ def analyze_pdf_layout(pdf_path: Path) -> List[PageLayout]:
 
     return layouts
 
-def remove_unnecessary_elements(layout_pages: List[PageLayout]) -> List[PageLayout]:
+def remove_unnecessary_elements(  # TODO: ich weiss nicht wie viel sinn das macht 
+    layout_pages: List[PageLayout],
+    *,
+    min_words: int = 50,
+) -> List[PageLayout]:
     """
-    Very simple cleanup:
-    - Remove very short text blocks that repeat on every page (e.g. headers/footers).
+    Remove all text blocks with fewer than `min_words` words.
     """
-    # Beispiel: Kandidaten sammeln (Text, page_count)
-    text_count: Dict[str, int] = {}
-    for layout in layout_pages:
-        for block in layout.text_blocks:
-            key = block.text.strip()
-            text_count[key] = text_count.get(key, 0) + 1
-
-    # Alles, was auf >50% der Seiten vorkommt und sehr kurz ist, gilt als "Boilerplate"
-    total_pages = len(layout_pages)
-    boilerplate_texts = {
-        t
-        for t, count in text_count.items()
-        if count > total_pages / 2 or len(t) < 50
-    }
-
     cleaned_pages: List[PageLayout] = []
+
     for layout in layout_pages:
         filtered_blocks = [
-            b for b in layout.text_blocks if b.text not in boilerplate_texts
+            b for b in layout.text_blocks
+            if b.wordcount >= min_words
         ]
+
         cleaned_pages.append(
             PageLayout(
                 page_number=layout.page_number,
@@ -145,7 +140,7 @@ def generate_image_descriptions(
                 image_bytes=img.image_bytes,
                 model="qwen/qwen3-vl-4b",
                 language=language,
-                max_tokens=512,
+                max_tokens=300,
             )
         except Exception as e:
             # Fallback wenn etwas schiefgeht
@@ -158,20 +153,15 @@ def generate_image_descriptions(
 def merge_text_and_image_descriptions(
     layout_pages: List[PageLayout],
     image_captions: Dict[str, str],
-) -> str:
+) -> List[PageLayout]:
     """
     Simpler Ansatz:
     - Für jede Seite werden Bild-Regionen in künstliche TextBlöcke mit Caption umgewandelt.
     - Am Ende hat jede Seite nur noch TextBlöcke.
-    - Diese werden nach y-Koordinate sortiert und zu Fließtext zusammengefügt.
     """
-
-    all_doc_lines: List[str] = []
 
     # Seiten in Reihenfolge
     for layout in sorted(layout_pages, key=lambda lp: lp.page_number):
-        # 1) Ausgangspunkt: vorhandene Textblöcke
-        combined_blocks: List[TextBlock] = list(layout.text_blocks)
 
         # 2) Für jedes Bild einen TextBlock einfügen
         for img in layout.images:
@@ -187,29 +177,20 @@ def merge_text_and_image_descriptions(
                 page=img.page,
                 bbox=img.bbox,
                 text=text,
+                block_type="figure_description",
+                wordcount=len(caption.split()) if caption else 0,
             )
-            combined_blocks.append(caption_block)
+            layout.text_blocks.append(caption_block)
 
-        # 3) Sortieren nach y0 = vertikale Position
-        combined_blocks.sort(key=lambda b: b.bbox[1])  # bbox = (x0, y0, x1, y1)
+    return layout_pages
 
-        # 4) Text der Seite bauen
-        page_lines = [block.text for block in combined_blocks if block.text.strip()]
-        page_text = "\n".join(page_lines).strip()
-
-        if page_text:
-            all_doc_lines.append(f"[PAGE {layout.page_number}]")
-            all_doc_lines.append(page_text)
-
-    # 5) Alles zu einem Dokument-String
-    return "\n\n".join(all_doc_lines)
 
 
 def preprocess_pdf(
     pdf_path: Path,
     *,
     language: str = "en",
-) -> str:
+) -> List[PageLayout]:
     """
     Full preprocessing pipeline for a PDF:
     1) Layout detection (text blocks + images)
@@ -221,7 +202,7 @@ def preprocess_pdf(
     layouts = analyze_pdf_layout(pdf_path)
 
     # 2) Boilerplate entfernen
-    cleaned_layouts = remove_unnecessary_elements(layouts)
+    cleaned_layouts = remove_unnecessary_elements(layouts, min_words=20)
 
     # 3) Alle Bilder einsammeln
     all_images: List[ImageRegion] = []
@@ -233,11 +214,8 @@ def preprocess_pdf(
         images=all_images,
         language=language,
     )
-
-    # 5) Text + Bildbeschreibungen zusammenführen
-    merged_text = merge_text_and_image_descriptions(
+    # 5) Text und Bildbeschreibungen zusammenführen
+    return merge_text_and_image_descriptions(
         layout_pages=cleaned_layouts,
         image_captions=image_captions,
     )
-
-    return merged_text
