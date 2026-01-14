@@ -7,6 +7,7 @@ import numpy as np
 import faiss
 
 from app.models.embedder_loader import LMStudioEmbedder
+from app.utils.chunker import TextChunk
 
 
 def _l2_normalize(x: np.ndarray) -> np.ndarray:
@@ -35,21 +36,11 @@ class FaissVectorStore:
     @classmethod
     def from_chunks(
         cls,
-        chunks: List[Dict[str, Any]],
+        chunks: List[TextChunk],
         embedder: Optional[LMStudioEmbedder] = None,
     ) -> "FaissVectorStore":
         """
-        Baut einen FAISS-Index aus einer Liste von Chunk-Dicts.
-        Erwartete Chunk-Struktur:
-        {
-            "id": str,
-            "document_id": str,
-            "page": int | None,
-            "chunk_index": int,
-            "global_chunk_id": int,
-            "content": str,
-            ...
-        }
+        Baut einen FAISS-Index aus einer Liste von TextChunk-Objekten.
         """
         if embedder is None:
             embedder = LMStudioEmbedder()
@@ -57,7 +48,7 @@ class FaissVectorStore:
         if not chunks:
             raise ValueError("Cannot build FAISS index from empty chunk list")
 
-        texts = [c["content"] for c in chunks]
+        texts = [c.content for c in chunks]
         embeddings = embedder.embed_texts(texts)  # shape (n, dim)
 
         if embeddings.ndim != 2:  # TODO vllt problematisch
@@ -73,12 +64,14 @@ class FaissVectorStore:
         metadata: List[Dict[str, Any]] = []
         for c in chunks:
             meta = {
-                "id": c.get("id"),
-                "document_id": c.get("document_id"),
-                "page": c.get("page"),
-                "chunk_index": c.get("chunk_index"),
-                "global_chunk_id": c.get("global_chunk_id"),
-                "content": c.get("content"),
+                "id": c.id,
+                "document_id": c.document_id,
+                "page_id": c.page_id,
+                "parent_block_id": c.parent_block_id,
+                "chunk_index": c.chunk_index,
+                "content": c.content,
+                "splited": c.splited,
+                "wordcount": c.wordcount
             }
             metadata.append(meta)
 

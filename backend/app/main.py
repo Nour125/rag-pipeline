@@ -7,7 +7,7 @@ from pathlib import Path
 from app.core.rag_pipeline import RAGPipeline
 from app.models.embedder_loader import LMStudioEmbedder
 from app.preprocessing.pdf_preprocessor import preprocess_pdf
-from app.utils.chunker import chunk_text
+from app.utils.chunker import TextChunk, chunk_layout_small2big_mod
 from app.utils.indexing import FaissVectorStore
 from app.api import routes_rag
 
@@ -61,42 +61,27 @@ def init_rag():
 
     embedder = LMStudioEmbedder()
 
-    chunks: list[dict] = []
     for pdf_path in pdf_files:
         document_id = pdf_path.stem
         print(f"Processing {document_id}...")
 
         # 1) preprocess (layout + cleanup + image captions -> merged text)
-        preprocessed_text = preprocess_pdf(pdf_path, language="en")
+        page_layouts = preprocess_pdf(pdf_path, language="en")
 
         # 2) chunk
-        doc_chunks = chunk_text(
+        doc_chunks = chunk_layout_small2big_mod(
             document_id=document_id,
-            text=preprocessed_text,
-            chunk_size_words=300,
-            chunk_overlap_words=50,
+            layout_pages=page_layouts,
+            chunk_size=50,
+            overlap=10
         )
 
-        # 3) convert to dicts
-        for ch in doc_chunks:
-            chunks.append(
-                {
-                    "id": ch.id,
-                    "document_id": ch.document_id,
-                    "chunk_index": ch.chunk_index,
-                    "global_chunk_id": len(chunks),
-                    "content": ch.content,
-                    "start_char": ch.start_char,
-                    "end_char": ch.end_char,
-                }
-            )
-
-    print(f"Total chunks across all PDFs: {len(chunks)}")
+    print(f"Total chunks across all PDFs: {len(doc_chunks)}")
 
     # 4) build FAISS store
-    vector_store = FaissVectorStore.from_chunks(chunks, embedder=embedder)
+    vector_store = FaissVectorStore.from_chunks(doc_chunks, embedder=embedder)
 
     # 5) create RAG pipeline and register it for the route
-    routes_rag.RAG_INSTANCE = RAGPipeline(store=vector_store, top_k=5)
+    routes_rag.RAG_INSTANCE = RAGPipeline(store=vector_store, top_k=5,chunks=doc_chunks)
 
     print("✅ RAG initialized from PDFs in data/")

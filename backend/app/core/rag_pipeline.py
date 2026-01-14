@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 
 from app.models.embedder_loader import LMStudioEmbedder
 from app.models.llm_client import LMStudioChatLLM
+from app.utils.chunker import TextChunk,expand_chunk_small2big_mod
 from app.utils.indexing import FaissVectorStore
 
 @dataclass
@@ -13,11 +14,12 @@ class RAGConfig:
 
 
 class RAGPipeline:
-    def __init__(self, store: FaissVectorStore, top_k: int = 7) -> None:
+    def __init__(self, store: FaissVectorStore, chunks: List[TextChunk], top_k: int = 5) -> None:
         self.embedder = LMStudioEmbedder()
         self.llm = LMStudioChatLLM()
         self.store = store
         self.top_k = top_k
+        self.chunks = chunks
 
     def answer(self, question: str) -> Dict[str, Any]:
         # 1) retrieve
@@ -29,15 +31,28 @@ class RAGPipeline:
         for h in hits:
             meta = h["metadata"]
             score = h["score"]
-            context_blocks.append(
-                f"[Source score={score:.3f} doc={meta.get('document_id')} chunk={meta.get('chunk_index')}]\n"
-                f"{meta.get('content')}"
-            )
+            hited_text_chunk = TextChunk(
+                    id=meta.get("id"),
+                    document_id=meta.get("document_id"),
+                    page_id=meta.get("page_id"),
+                    parent_block_id=meta.get("parent_block_id"),
+                    chunk_index=meta.get("chunk_index"),
+                    content=meta.get("content"),
+                    splited=meta.get("splited"), 
+                    wordcount=meta.get("wordcount")
+                )
+            expanded_content_chunks = expand_chunk_small2big_mod(hit=hited_text_chunk,chunks=self.chunks)
+
+            for content_chunk in expanded_content_chunks:
+                context_blocks.append(
+                    f"[Source score={score:.3f} doc={content_chunk.document_id} chunk_id={content_chunk.id}]\n"
+                    f"{content_chunk.content}"
+                )
             sources.append(
                 {
                     "score": score,
                     "document_id": meta.get("document_id"),
-                    "chunk_index": meta.get("chunk_index"),
+                    "chunk_id": meta.get("id"),
                     "content": meta.get("content"), 
                 }
             )
@@ -52,8 +67,7 @@ class RAGPipeline:
             "as stated in the context, but do NOT give personal advice, instructions, or recommendations. "
             "If the question is irrelevant, violent, or unrelated to the context, respond exactly with: "
             "\"I can't answer this type of question.\" "
-            "Do not use any outside knowledge. "
-            "Cite sources by referring to the Source markers."
+            "Cite sources by referring to the chunk_id."
         )
 
 

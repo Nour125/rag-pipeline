@@ -5,8 +5,8 @@ import {marked} from 'marked';
 export type RAGSource = {
   score: number 
   document_id: string 
-  chunk_index: number 
-  content?: string  // you include it in the response, so keep it optional just in case
+  chunk_id: string 
+  content?: string  
 } 
 
 export type RAGResponse = {
@@ -151,7 +151,7 @@ export function RagSimpleUI() {
 
           {(result.sources ?? []).map((s, idx) => (
             <details
-              key={`${s.document_id}-${s.chunk_index}-${idx}`}
+              key={`${s.document_id}-${s.chunk_id}-${idx}`}
               style={{
                 border: "1px solid #444",
                 borderRadius: 10,
@@ -162,13 +162,13 @@ export function RagSimpleUI() {
             >
               <summary style={{ cursor: "pointer" }}>
                 <b>#{idx + 1}</b> — score={s.score.toFixed(4)} —{" "}
-                {s.document_id} — chunk {s.chunk_index}
+                {s.document_id} — chunk {s.chunk_id}
               </summary>
 
               <div style={{ marginTop: 10, opacity: 0.9 }}>
                 <div style={{ fontSize: 13, opacity: 0.8, marginBottom: 6 }}>
-                  document_id: <code>{s.document_id}</code> · chunk_index:{" "}
-                  <code>{s.chunk_index}</code>
+                  document_id: <code>{s.document_id}</code> · chunk_id:{" "}
+                  <code>{s.chunk_id}</code>
                 </div>
 
                 <pre
