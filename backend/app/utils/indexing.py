@@ -26,19 +26,21 @@ class FaissVectorStore:
     """
     FAISS-basierter Vektorspeicher:
     - index: FAISS IndexFlatIP (inner product)
-    - dim: Vektordimension
     - metadata: Liste mit Metadaten (1:1 zu Index-Zeilen)
-    """
-    index: faiss.IndexFlatIP
-    dim: int
-    metadata: List[Dict[str, Any]]
+    """  
+    
+    def __init__(self, index: faiss.IndexFlatIP, metadata: List[Dict[str, Any]], embedder):
+        self.index = index
+        self.metadata = metadata
+        self.embedder = embedder
+
 
     @classmethod
     def from_chunks(
         cls,
         chunks: List[TextChunk],
         embedder: Optional[LMStudioEmbedder] = None,
-    ) -> "FaissVectorStore":
+    ) -> FaissVectorStore:
         """
         Baut einen FAISS-Index aus einer Liste von TextChunk-Objekten.
         """
@@ -75,7 +77,50 @@ class FaissVectorStore:
             }
             metadata.append(meta)
 
-        return cls(index=index, dim=dim, metadata=metadata)
+        return cls(index=index, metadata=metadata, embedder=embedder)
+
+    def add_chunks(
+        self,
+        chunks: List[TextChunk],
+        embedder: Optional[LMStudioEmbedder] = None,
+    ) -> None:
+        """
+        Fügt dem bestehenden Index neue Chunks hinzu.
+        """
+        if embedder is None:
+            embedder =  self.embedder
+
+        if not chunks:
+            return
+
+        texts = [c.content for c in chunks]
+        embeddings = embedder.embed_texts(texts)  # shape (n, dim)
+
+        if embeddings.ndim != 2:
+            raise ValueError("Embeddings must be a 2D array")
+
+        embeddings = _l2_normalize(embeddings).astype("float32")
+
+
+        if self.index.ntotal > 0 and self.index.d != embeddings.shape[1]:
+            raise ValueError(
+                f"Embedding dim mismatch: index dim={self.index.d}, new dim={embeddings.shape[1]}"
+            )
+
+        self.index.add(embeddings)
+
+        for c in chunks:
+            meta = {
+                "id": c.id,
+                "document_id": c.document_id,
+                "page_id": c.page_id,
+                "parent_block_id": c.parent_block_id,
+                "chunk_index": c.chunk_index,
+                "content": c.content,
+                "splited": c.splited,
+                "wordcount": c.wordcount
+            }
+            self.metadata.append(meta)
 
     def search_by_embedding(
         self,

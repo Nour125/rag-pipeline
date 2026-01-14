@@ -2,15 +2,24 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import List, Dict, Any
+from zipfile import Path
 
 from app.models.embedder_loader import LMStudioEmbedder
 from app.models.llm_client import LMStudioChatLLM
-from app.utils.chunker import TextChunk,expand_chunk_small2big_mod
+from app.preprocessing.pdf_preprocessor import preprocess_pdf
+from app.utils.chunker import TextChunk, chunk_layout_small2big_mod,expand_chunk_small2big_mod
 from app.utils.indexing import FaissVectorStore
 
 @dataclass
 class RAGConfig:
     top_k: int = 7
+
+@dataclass
+class UploadResult:
+    document_id: str
+    filename: str
+    num_pages: int
+    num_chunks: int
 
 
 class RAGPipeline:
@@ -89,3 +98,49 @@ class RAGPipeline:
         )
 
         return {"answer": answer_text, "sources": sources}
+
+    def upload_pdfs(
+        self,
+        pdf_names: List[str],
+        data_folder: Path,
+        language: str = "en",
+        chunk_size: int = 50,
+        overlap: int = 10,
+    ) -> List[UploadResult]:
+        """
+        Takes already-saved PDF paths, preprocesses + chunks them,
+        and updates the vector store incrementally.
+        """
+        results: List[UploadResult] = []
+        all_new_chunks: List[TextChunk] = []
+
+        for pdf_name in pdf_names:
+            document_id = pdf_name
+            pdf_path = data_folder / pdf_name
+
+            page_layouts = preprocess_pdf(pdf_path, language=language)
+            doc_chunks = chunk_layout_small2big_mod(
+                document_id=document_id,
+                layout_pages=page_layouts,
+                chunk_size=chunk_size,
+                overlap=overlap,
+            )
+
+            all_new_chunks.extend(doc_chunks)
+
+            results.append(
+                UploadResult(
+                    document_id=document_id,
+                    filename=pdf_path.name,
+                    num_pages=len(page_layouts),
+                    num_chunks=len(doc_chunks),
+                )
+            )
+
+        if all_new_chunks:
+            # update store
+            self.store.add_chunks(all_new_chunks)
+            # keep for sources/debug
+            self.chunks.extend(all_new_chunks)
+
+        return results
