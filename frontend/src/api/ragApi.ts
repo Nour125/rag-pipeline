@@ -1,5 +1,6 @@
 import { apiClient } from "./client";
 import type { RagSettings, RagStats, RagTurn } from "../types/rag";
+import type { UploadedDocument } from "../types/rag";
 
 export type QueryRequest = {
   question: string;
@@ -10,6 +11,49 @@ export type QueryResponse = {
   answer: string;
   sources: RagTurn["sources"];
 };
+
+export type UploadResponse = {
+  uploaded_files: number;
+  saved_to: string;
+  documents: any[]; // backend dicts (we map)
+  total_chunks_in_store: number;
+};
+
+export async function uploadPdfs(files: File[], processImages: boolean): Promise<UploadResponse> {
+  const formData = new FormData();
+  // IMPORTANT: field name must match your backend param: "files"
+  for (const f of files) {
+    formData.append("files", f);
+  }
+  formData.append("process_images", processImages ? "true" : "false");
+
+  const res = await apiClient.post("/rag/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return res.data as UploadResponse;
+}
+
+export function mapUploadDocuments(rawDocs: any[]): UploadedDocument[] {
+  const now = new Date().toISOString();
+
+  return rawDocs.map((d, idx) => {
+    // try common keys (robust)
+    const filename =
+      d.filename ?? d.file_name ?? d.safe_name ?? d.document_id ?? `document_${idx}`;
+
+    const documentId =
+      d.document_id ?? d.id ?? d.safe_name ?? filename;
+
+    return {
+      documentId: String(documentId),
+      filename: String(filename),
+      uploadedAt: now,
+      pages: typeof d.pages === "number" ? d.pages : undefined,
+      chunkCount: typeof d.chunk_count === "number" ? d.chunk_count : undefined,
+    };
+  });
+}
 
 
 export async function setBackendSettings(settings: RagSettings): Promise<RagSettings> {

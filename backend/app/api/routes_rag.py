@@ -5,7 +5,7 @@ import shutil
 import shutil
 import uuid
 
-from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from app.core.rag_pipeline import RAGPipeline
@@ -46,7 +46,7 @@ def rag_query(req: QueryRequest):
 
 
 @router.post("/upload")
-def upload_pdfs(files: List[UploadFile]):
+def upload_pdfs(files: List[UploadFile]= File(...),process_images: bool = Form(True)):
     rag = _require_rag()
 
     # project root: backend/app/api/routes_rag.py -> parents[3] = repo root
@@ -68,7 +68,7 @@ def upload_pdfs(files: List[UploadFile]):
         with out_path.open("wb") as buffer:
             shutil.copyfileobj(f.file, buffer)
     
-    results = rag.upload_pdfs(saved_names, raw_dir)
+    results = rag.upload_pdfs(saved_names, raw_dir, process_images=process_images)
 
     return {
         "uploaded_files": len(files),

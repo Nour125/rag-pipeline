@@ -9,9 +9,10 @@ export type RagSettings = {
 
 export type UploadedDocument = {
   documentId: string;
-  sizeBytes: number;
   uploadedAt: string; // ISO string
   pages?: number;
+  chunkCount?: number;
+  filename: string;      // original oder safe
 };
 
 export type RagStats = {

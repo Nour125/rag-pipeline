@@ -145,6 +145,7 @@ class RAGPipeline:
         self,
         pdf_names: List[str],
         data_folder: Path,
+        process_images: bool = True,
     ) -> List[UploadResult]:
         """
         Takes already-saved PDF paths, preprocesses + chunks them,
@@ -157,7 +158,7 @@ class RAGPipeline:
             document_id = pdf_name
             pdf_path = data_folder / pdf_name
 
-            page_layouts = preprocess_pdf(pdf_path, language="en") # TODO: language param
+            page_layouts = preprocess_pdf(pdf_path, language="en", process_images=process_images) # TODO: language param
             doc_chunks = chunk_layout_small2big_mod(
                 document_id=document_id,
                 layout_pages=page_layouts,
@@ -170,6 +171,7 @@ class RAGPipeline:
             results.append(
                 UploadResult(
                     document_id=document_id,
+                    filename=pdf_name,
                     num_pages=len(page_layouts),
                     num_chunks=len(doc_chunks),
                 )

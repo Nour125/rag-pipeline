@@ -26,6 +26,7 @@ export default function RagWorkbenchPage() {
         const confirmed = await setBackendSettings(next);
         setSettings(confirmed);
     }
+    
 
   // Phase A: load stats (stubbed currently)
   useEffect(() => {
@@ -40,9 +41,11 @@ export default function RagWorkbenchPage() {
       left={
         <RagControlPanel
           settings={settings}
-          setSettings={handleApply}
+          setSettings={handleApply} 
           uploads={uploads}
+          setUploads={setUploads}
           stats={stats}
+          setStats={setStats}
         />
       }
       right={<RagWorkspace turns={turns} />}
