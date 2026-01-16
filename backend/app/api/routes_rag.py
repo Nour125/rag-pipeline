@@ -6,7 +6,7 @@ import shutil
 import uuid
 
 from fastapi import APIRouter, HTTPException, UploadFile
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.core.rag_pipeline import RAGPipeline
 
@@ -19,6 +19,16 @@ RAG_INSTANCE: RAGPipeline | None = None
 class QueryRequest(BaseModel):
     question: str
     top_k: int | None = None
+
+class RagSettingsIn(BaseModel):
+    llm_model: str = Field(default="lmstudio-default")
+    top_k: int = Field(default=5, ge=1, le=50)
+
+    chunk_size: int = Field(default=500, ge=50, le=5000)
+    chunk_overlap: int = Field(default=80, ge=0, le=1000)
+
+    temperature: float = Field(default=0.2, ge=0.0, le=2.0)
+    max_tokens: int = Field(default=800, ge=16, le=4096)
 
 
 def _require_rag() -> RAGPipeline:
@@ -58,7 +68,7 @@ def upload_pdfs(files: List[UploadFile]):
         with out_path.open("wb") as buffer:
             shutil.copyfileobj(f.file, buffer)
     
-    results = rag.upload_pdfs(saved_names, raw_dir, language="en", chunk_size=50, overlap=10)
+    results = rag.upload_pdfs(saved_names, raw_dir)
 
     return {
         "uploaded_files": len(files),
@@ -66,3 +76,18 @@ def upload_pdfs(files: List[UploadFile]):
         "documents": [r.__dict__ for r in results],
         "total_chunks_in_store": len(rag.chunks),
     }
+
+@router.post("/settings")
+def set_settings(payload: RagSettingsIn):
+    rag = _require_rag()
+    
+    rag.apply_settings(
+        llm_model=payload.llm_model,
+        top_k=payload.top_k,
+        chunk_size=payload.chunk_size,
+        chunk_overlap=payload.chunk_overlap,
+        temperature=payload.temperature,
+        max_tokens=payload.max_tokens,
+    )
+
+    return {"ok": True, "settings": rag.get_settings()}

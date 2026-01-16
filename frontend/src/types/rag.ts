@@ -1,0 +1,43 @@
+export type RagSettings = {
+  llmModel: string;
+  topK: number;
+  chunkSize: number;
+  chunkOverlap: number;
+  temperature: number;
+  maxTokens: number;
+};
+
+export type UploadedDocument = {
+  documentId: string;
+  sizeBytes: number;
+  uploadedAt: string; // ISO string
+  pages?: number;
+};
+
+export type RagStats = {
+  documentCount: number;
+  chunkCount: number;
+  lastIndexedAt?: string;
+};
+
+export type RagSource = {
+  rank: number;
+  score: number;
+  documentId: string;
+  chunkIndex: number;
+  snippet: string;
+
+  isChildChunk?: boolean;
+  parentChunkIndex?: number;
+
+  documentUrl?: string;
+  pageNumber?: number;
+};
+
+export type RagTurn = {
+  id: string; // frontend id
+  question: string;
+  answer: string;
+  createdAt: string;
+  sources: RagSource[];
+};

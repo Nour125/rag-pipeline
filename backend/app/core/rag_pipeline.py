@@ -30,6 +30,48 @@ class RAGPipeline:
         self.top_k = top_k
         self.chunks = chunks
 
+        self.chunk_size = 100
+        self.chunk_overlap = 20
+
+        self.temperature = 0.2
+        self.max_tokens = 2048
+    
+
+    def apply_settings(
+        self,
+        llm_model: str,
+        top_k: int,
+        chunk_size: int,
+        chunk_overlap: int,
+        temperature: float,
+        max_tokens: int,
+    ):
+        # Store settings (MVP: only store, no re-indexing here)
+        llmCnfig = {
+            "model": llm_model,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+        self.llm = LMStudioChatLLM(config=llmCnfig)
+        self.top_k = top_k
+
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+
+    def get_settings(self) -> dict:
+        return {
+            "llm_model": self.llm.getName(),
+            "top_k": self.top_k,
+            "chunk_size": self.chunk_size,
+            "chunk_overlap": self.chunk_overlap,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+        }
+
+
     def answer(self, question: str) -> Dict[str, Any]:
         # 1) retrieve
         hits = self.store.search_by_text(question, embedder=self.embedder, top_k=self.top_k)
@@ -103,9 +145,6 @@ class RAGPipeline:
         self,
         pdf_names: List[str],
         data_folder: Path,
-        language: str = "en",
-        chunk_size: int = 50,
-        overlap: int = 10,
     ) -> List[UploadResult]:
         """
         Takes already-saved PDF paths, preprocesses + chunks them,
@@ -118,12 +157,12 @@ class RAGPipeline:
             document_id = pdf_name
             pdf_path = data_folder / pdf_name
 
-            page_layouts = preprocess_pdf(pdf_path, language=language)
+            page_layouts = preprocess_pdf(pdf_path, language="en") # TODO: language param
             doc_chunks = chunk_layout_small2big_mod(
                 document_id=document_id,
                 layout_pages=page_layouts,
-                chunk_size=chunk_size,
-                overlap=overlap,
+                chunk_size=self.chunk_size,
+                overlap=self.chunk_overlap,
             )
 
             all_new_chunks.extend(doc_chunks)
@@ -131,7 +170,6 @@ class RAGPipeline:
             results.append(
                 UploadResult(
                     document_id=document_id,
-                    filename=pdf_path.name,
                     num_pages=len(page_layouts),
                     num_chunks=len(doc_chunks),
                 )

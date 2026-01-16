@@ -1,11 +1,10 @@
 
-import { RagSimpleUI } from "./components/RagSimpleUI";
 import './App.css'
-
+import RagWorkbenchPage from "./pages/RagWorkbenchPage";
 function App() {
   return (
     <>
-      <RagSimpleUI/>
+      <RagWorkbenchPage/>
     </>
   )
 }
