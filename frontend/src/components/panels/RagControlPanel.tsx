@@ -1,4 +1,5 @@
 import type { RagSettings, RagStats, UploadedDocument } from "../../types/rag";
+import GlobalStatsCard from "../cards/GlobalStatsCard";
 import InitializationCard from "../cards/InitializationCard";
 import UploadCard from "../cards/UploadCard";
 
@@ -21,31 +22,8 @@ export default function RagControlPanel({ settings, setSettings, uploads, setUpl
       <UploadCard uploads={uploads} setUploads={setUploads} stats={stats} setStats={setStats} />
 
 
-            {/* Global Stats */}
-      <section
-        style={{
-          border: "1px solid rgba(0,0,0,0.1)",
-          borderRadius: 12,
-          padding: 12,
-        }}
-      >
-        <h3 style={{ marginTop: 0 }}>Global Stats</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          <div>
-            <div style={{ fontSize: 12, opacity: 0.7 }}>Documents</div>
-            <div style={{ fontSize: 18, fontWeight: 600 }}>{stats.documentCount}</div>
-          </div>
-          <div>
-            <div style={{ fontSize: 12, opacity: 0.7 }}>Chunks</div>
-            <div style={{ fontSize: 18, fontWeight: 600 }}>{stats.chunkCount}</div>
-          </div>
-        </div>
-        {stats.lastIndexedAt && (
-          <div style={{ marginTop: 8, fontSize: 12, opacity: 0.7 }}>
-            last indexed: {new Date(stats.lastIndexedAt).toLocaleString()}
-          </div>
-        )}
-      </section>
+      <GlobalStatsCard stats={stats} setStats={setStats} />
+      
     </div>
   );
 }

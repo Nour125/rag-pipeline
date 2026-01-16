@@ -91,3 +91,16 @@ def set_settings(payload: RagSettingsIn):
     )
 
     return {"ok": True, "settings": rag.get_settings()}
+
+@router.get("/stats")
+def get_stats():
+    rag = _require_rag()
+    # documents count: simplest MVP = number of unique document_ids in chunks
+    # If you already track documents somewhere else, use that instead.
+    doc_ids = {c.document_id for c in rag.chunks} if rag.chunks else set()
+
+    return {
+        "documentCount": len(doc_ids),
+        "chunkCount": len(rag.chunks),
+        "settings": rag.get_settings() if hasattr(rag, "get_settings") else None,
+    }

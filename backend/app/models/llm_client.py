@@ -27,5 +27,6 @@ class LMStudioChatLLM:
             max_tokens=self.config.max_tokens,
         )
         return response.choices[0].message.content.strip()
+    
     def getName(self) -> str:
-        return self.config["model"]
+        return self.config.model

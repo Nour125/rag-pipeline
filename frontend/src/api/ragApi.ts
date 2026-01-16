@@ -85,13 +85,19 @@ export async function setBackendSettings(settings: RagSettings): Promise<RagSett
 }
 
 
-export async function fetchStats(): Promise<RagStats> {
-  // später: GET /rag/stats
-  // return (await apiClient.get("/rag/stats")).data;
 
-  // MVP stub:
-  return { documentCount: 0, chunkCount: 0 };
+
+export async function fetchStats(): Promise<RagStats> {
+  const res = await apiClient.get("/rag/stats");
+  const data = res.data;
+
+  return {
+    documentCount: data.documentCount ?? 0,
+    chunkCount: data.chunkCount ?? 0,
+    lastIndexedAt: data.lastIndexedAt, // optional if you add later
+  };
 }
+
 
 export async function queryRag(_payload: QueryRequest): Promise<QueryResponse> {
   // später: POST /rag/query
