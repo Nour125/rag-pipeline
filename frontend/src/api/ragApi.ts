@@ -2,14 +2,20 @@ import { apiClient } from "./client";
 import type { RagSettings, RagStats, RagTurn } from "../types/rag";
 import type { UploadedDocument } from "../types/rag";
 
+
 export type QueryRequest = {
   question: string;
-  settings: RagSettings;
+  //settings: RagSettings;
 };
 
 export type QueryResponse = {
   answer: string;
-  sources: RagTurn["sources"];
+  sources: Array<{
+    score: number;
+    document_id: string;
+    chunk_id: string;
+    content: string;
+  }>;
 };
 
 export type UploadResponse = {
@@ -55,7 +61,6 @@ export function mapUploadDocuments(rawDocs: any[]): UploadedDocument[] {
   });
 }
 
-
 export async function setBackendSettings(settings: RagSettings): Promise<RagSettings> {
   const payload = {
     llm_model: settings.llmModel,
@@ -84,9 +89,6 @@ export async function setBackendSettings(settings: RagSettings): Promise<RagSett
   };
 }
 
-
-
-
 export async function fetchStats(): Promise<RagStats> {
   const res = await apiClient.get("/rag/stats");
   const data = res.data;
@@ -98,14 +100,20 @@ export async function fetchStats(): Promise<RagStats> {
   };
 }
 
-
-export async function queryRag(_payload: QueryRequest): Promise<QueryResponse> {
-  // später: POST /rag/query
-  // return (await apiClient.post("/rag/query", payload)).data;
-
-  // MVP stub:
-  return {
-    answer: "Backend not connected yet (stub).",
-    sources: [],
+export async function queryRag(payload: QueryRequest): Promise<QueryResponse> {
+  const body = {
+    question: payload.question,
+    //settings: {
+    //  llm_model: payload.settings.llmModel,
+    //  top_k: payload.settings.topK,
+    //  chunk_size: payload.settings.chunkSize,
+    //  chunk_overlap: payload.settings.chunkOverlap,
+    //  temperature: payload.settings.temperature,
+    //  max_tokens: payload.settings.maxTokens,
+    //},
   };
+
+  const res = await apiClient.post("/rag/query", body);
+  return res.data as QueryResponse;
 }
+

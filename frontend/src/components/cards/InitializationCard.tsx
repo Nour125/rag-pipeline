@@ -124,7 +124,7 @@ export default function InitializationCard({ settings, onApply }: Props) {
             style={{ width: "100%", padding: 8, marginTop: 4 }}
             type="number"
             min={16}
-            max={4096}
+            max={10000}
             value={draft.maxTokens}
             onChange={(e) => setDraft({ ...draft, maxTokens: Number(e.target.value) })}
           />

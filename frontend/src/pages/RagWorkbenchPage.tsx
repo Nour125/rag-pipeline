@@ -48,7 +48,7 @@ export default function RagWorkbenchPage() {
           setStats={setStats}
         />
       }
-      right={<RagWorkspace turns={turns} />}
+      right={<RagWorkspace turns={turns} setTurns={setTurns} settings={settings} />}
     />
   );
 }

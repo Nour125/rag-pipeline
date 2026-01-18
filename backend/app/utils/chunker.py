@@ -97,5 +97,9 @@ def expand_chunk_small2big_mod(
     else:
         prev = chunks[hit.chunk_index - 1] if hit.chunk_index > 0 else None
         next = chunks[hit.chunk_index + 1] if hit.chunk_index < len(chunks) - 1 else None
+        if prev is None:
+            return [hit, next] if next else [hit]
+        if next is None:
+            return [prev, hit] if prev else [hit]
         return [prev,hit,next]
 

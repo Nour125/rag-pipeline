@@ -11,8 +11,8 @@ export default function RagLayout({ left, right }: RagLayoutProps) {
       {/* Left panel */}
       <aside
         style={{
-          width: "35%",
-          borderRight: "2px solid rgba(0,0,0,0.1)",
+          width: "30%",
+          borderRight: "2px solid rgba(0,0,0,0.1)", 
           padding: 16,
           overflowY: "auto",
         }}

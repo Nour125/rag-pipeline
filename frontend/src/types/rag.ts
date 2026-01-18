@@ -24,16 +24,21 @@ export type RagStats = {
 export type RagSource = {
   rank: number;
   score: number;
+
   documentId: string;
-  chunkIndex: number;
+  chunkId: string;
+  chunkIndex: number | null;
+  pageId?: number | null;
+
   snippet: string;
 
   isChildChunk?: boolean;
-  parentChunkIndex?: number;
+  parentBlockId?: string | null;
 
   documentUrl?: string;
-  pageNumber?: number;
 };
+
+
 
 export type RagTurn = {
   id: string; // frontend id

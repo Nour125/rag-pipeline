@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import Any, List, Optional, Dict
 from pathlib import Path
 import shutil
 import shutil
@@ -7,6 +7,7 @@ import uuid
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
+from fastapi.responses import FileResponse
 
 from app.core.rag_pipeline import RAGPipeline
 
@@ -18,17 +19,15 @@ RAG_INSTANCE: RAGPipeline | None = None
 
 class QueryRequest(BaseModel):
     question: str
-    top_k: int | None = None
+    # settings: Optional[Dict[str, Any]] = None
 
 class RagSettingsIn(BaseModel):
-    llm_model: str = Field(default="lmstudio-default")
+    llm_model: str = Field(default="qwen/qwen3-vl-4b")
     top_k: int = Field(default=5, ge=1, le=50)
-
-    chunk_size: int = Field(default=500, ge=50, le=5000)
-    chunk_overlap: int = Field(default=80, ge=0, le=1000)
-
+    chunk_size: int = Field(default=100, ge=50, le=5000)
+    chunk_overlap: int = Field(default=20, ge=0, le=1000)
     temperature: float = Field(default=0.2, ge=0.0, le=2.0)
-    max_tokens: int = Field(default=800, ge=16, le=4096)
+    max_tokens: int = Field(default=2048, ge=16, le=10000)
 
 
 def _require_rag() -> RAGPipeline:
@@ -39,10 +38,25 @@ def _require_rag() -> RAGPipeline:
 @router.post("/query")
 def rag_query(req: QueryRequest):
     rag = _require_rag()
-    if req.top_k is not None:
-        rag.top_k = req.top_k
-
     return rag.answer(req.question)
+
+@router.get("/documents/{document_id}")
+def get_document(document_id: str):
+    # repo root
+    project_root = Path(__file__).resolve().parents[3]
+    raw_dir = project_root / "data" / "raw"
+
+    # Your upload uses safe_name as filename; document_id should match that.
+    file_path = raw_dir / document_id
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"Document not found: {document_id}")
+
+    return FileResponse(
+        path=str(file_path),
+        media_type="application/pdf",
+        filename=document_id,
+    )
 
 
 @router.post("/upload")
