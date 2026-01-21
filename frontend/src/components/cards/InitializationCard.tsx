@@ -11,9 +11,11 @@ export default function InitializationCard({ settings, onApply }: Props) {
   const modelOptions = useMemo(
     () => [
       { id: "qwen/qwen3-vl-4b", label: "LM Studio (default)" },
-      { id: "llama-3.1-8b-instruct", label: "Llama 3.1 8B Instruct" },
+      { id: "deepseek/deepseek-r1-0528-qwen3-8b", label: "DeepSeek R1 0528 Qwen3 8B" },
+      { id: "google/gemma-3-12b", label: "Google Gemma 3 12B" },
+      { id: "meta-llama-3.1-8b-instruct", label: "Meta Llama 3.1 8B Instruct" },
       { id: "openai/gpt-oss-20b", label: "OpenAI GPT OSS 20B" },
-      { id: "qwen2.5-7b-instruct", label: "Qwen 2.5 7B Instruct" },
+
     ],
     []
   );

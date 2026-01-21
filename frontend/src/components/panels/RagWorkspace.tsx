@@ -31,6 +31,7 @@ export default function RagWorkspace({ turns, setTurns }: Props) {
     answer: "…",
     createdAt,
     sources: [],
+    status: "loading",
   };
 
   setTurns((prev) => [...prev, optimistic]);
@@ -57,6 +58,7 @@ export default function RagWorkspace({ turns, setTurns }: Props) {
       ...optimistic,
       answer: res.answer,
       sources,
+      status: "success",
     };
 
     // ✅ update the specific turn using functional update
@@ -65,7 +67,7 @@ export default function RagWorkspace({ turns, setTurns }: Props) {
     setTurns((prev) =>
       prev.map((t) =>
         t.id === turnId
-          ? { ...t, answer: `Error: ${e?.message ?? "Request failed"}` }
+          ? { ...t, status: "error", errorMessage: `Error: ${e?.message ?? "Request failed"}`, answer: "" }
           : t
       )
     );

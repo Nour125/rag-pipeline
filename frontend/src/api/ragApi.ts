@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { RagSettings, RagStats, RagTurn } from "../types/rag";
+import type { RagSettings, RagStats } from "../types/rag";
 import type { UploadedDocument } from "../types/rag";
 
 

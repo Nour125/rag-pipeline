@@ -38,7 +38,7 @@ export type RagSource = {
   documentUrl?: string;
 };
 
-
+export type RagTurnStatus = "loading" | "success" | "error";
 
 export type RagTurn = {
   id: string; // frontend id
@@ -46,4 +46,6 @@ export type RagTurn = {
   answer: string;
   createdAt: string;
   sources: RagSource[];
+  status: RagTurnStatus;
+  errorMessage?: string;
 };
