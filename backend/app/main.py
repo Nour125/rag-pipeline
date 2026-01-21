@@ -1,5 +1,7 @@
+import faiss
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import numpy as np
 
 from app.api.routes_health import router as health_router
 from app.api.routes_rag import router as rag_router
@@ -43,45 +45,19 @@ def read_root():
 
 @app.on_event("startup")
 def init_rag():
-    # backend/app/main.py  -> parents[2] = project root
-    project_root = Path(__file__).resolve().parents[2]
-    print(f"Project root: {project_root}")
-
-    pdf_folder = project_root / "data"
-    print(f"PDF folder: {pdf_folder}")
-
-    if not pdf_folder.exists():
-        print("⚠️ data/ folder not found -> RAG not initialized")
-        return
-
-    pdf_files = list(pdf_folder.glob("*.pdf"))
-    if not pdf_files:
-        print("⚠️ No PDFs found in data/ -> RAG not initialized")
-        return
-
     embedder = LMStudioEmbedder()
+    # 1) probe embedding dim
+    probe = embedder.embed_text("dim_probe")
+    probe = np.asarray(probe, dtype="float32").reshape(1, -1)
+    dim = probe.shape[1]
 
-    for pdf_path in pdf_files:
-        document_id = pdf_path.stem
-        print(f"Processing {document_id}...")
+    # 2) create EMPTY FAISS index
+    index = faiss.IndexFlatIP(dim)
 
-        # 1) preprocess (layout + cleanup + image captions -> merged text)
-        page_layouts = preprocess_pdf(pdf_path, language="en")
+    # 3) create EMPTY store
+    vector_store = FaissVectorStore(index=index, metadata=[], embedder=embedder)
 
-        # 2) chunk
-        doc_chunks = chunk_layout_small2big_mod(
-            document_id=document_id,
-            layout_pages=page_layouts,
-            chunk_size=50,
-            overlap=10
-        )
+    # 4) register pipeline
+    routes_rag.RAG_INSTANCE = RAGPipeline(store=vector_store, top_k=5, chunks=[])
 
-    print(f"Total chunks across all PDFs: {len(doc_chunks)}")
-
-    # 4) build FAISS store
-    vector_store = FaissVectorStore.from_chunks(doc_chunks, embedder=embedder)
-
-    # 5) create RAG pipeline and register it for the route
-    routes_rag.RAG_INSTANCE = RAGPipeline(store=vector_store, top_k=5,chunks=doc_chunks)
-
-    print("✅ RAG initialized from PDFs in data/")
+    print(f"✅ RAG initialized (empty). FAISS dim={dim}. Use /rag/upload to add PDFs.")

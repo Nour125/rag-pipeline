@@ -10,9 +10,9 @@ def get_lmstudion_client() -> OpenAI:
 
 @dataclass
 class LLMConfig:
-    model:str = "qwen/qwen3-vl-4b" # "openai/gpt-oss-20b" 
+    model:str = "qwen/qwen3-vl-4b" 
     temperature:float = 0.2
-    max_tokens:int = 2048 # TODO Adjusted for local LLMs
+    max_tokens:int = 2048 
 
 class LMStudioChatLLM:
     def __init__(self, config: Optional[LLMConfig] = None) -> None:
@@ -27,3 +27,6 @@ class LMStudioChatLLM:
             max_tokens=self.config.max_tokens,
         )
         return response.choices[0].message.content.strip()
+    
+    def getName(self) -> str:
+        return self.config.model

@@ -188,6 +188,7 @@ def merge_text_and_image_descriptions(
 
 def preprocess_pdf(
     pdf_path: Path,
+    process_images: bool = True,
     *,
     language: str = "en",
 ) -> List[PageLayout]:
@@ -210,10 +211,13 @@ def preprocess_pdf(
         all_images.extend(layout.images)
 
     # 4) Bildbeschreibungen erzeugen
-    image_captions = generate_image_descriptions(
-        images=all_images,
-        language=language,
-    )
+    if process_images:
+        image_captions = generate_image_descriptions(
+            images=all_images,
+            language=language,
+        )
+    else:
+        image_captions = {}
     # 5) Text und Bildbeschreibungen zusammenführen
     return merge_text_and_image_descriptions(
         layout_pages=cleaned_layouts,
