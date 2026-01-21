@@ -74,6 +74,7 @@ class RAGPipeline:
 
         # 2) build context
         context_blocks: List[str] = []
+        contextDict: Dict[int, str] = {}
         sources: List[Dict[str, Any]] = []
         print("HITS:", len(hits))
         for h in hits:
@@ -94,10 +95,11 @@ class RAGPipeline:
 
             for content_chunk in expanded_content_chunks:
                 context_blocks.append(
-                    f"[Source score={score:.3f} doc={content_chunk.document_id} chunk_id={content_chunk.id}]\n"
+                    f"[Source score={score:.3f} doc={content_chunk.document_id} chunk_id={content_chunk.chunk_index}]\n"
                     f"{content_chunk.content}"
                 )
-
+            contextDict[content_chunk.parent_block_id] = "\n\n---\n\n".join(context_blocks)
+            context_blocks = []  # reset for next hit
             sources.append(
                 {
                     "rank": len(sources) + 1,
@@ -117,7 +119,8 @@ class RAGPipeline:
                 }
             )
 
-        context_text = "\n\n---\n\n".join(context_blocks)
+
+        context_text = "\n\n---\n\n".join(contextDict.values())
 
 
         # 3) prompt

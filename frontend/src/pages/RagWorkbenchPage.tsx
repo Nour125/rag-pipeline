@@ -44,7 +44,7 @@ export default function RagWorkbenchPage() {
   }, []);
 
   useEffect(() => {
-  saveJson(SETTINGS_KEY, settings);
+    saveJson(SETTINGS_KEY, settings);
   }, [settings]);
 
   useEffect(() => {

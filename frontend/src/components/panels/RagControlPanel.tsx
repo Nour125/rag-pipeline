@@ -18,10 +18,7 @@ export default function RagControlPanel({ settings, setSettings, uploads, setUpl
       <h2 style={{ margin: 0 }}>RAG Control Panel</h2>
 
       <InitializationCard settings={settings} onApply={setSettings} />
-
       <UploadCard uploads={uploads} setUploads={setUploads} stats={stats} setStats={setStats} />
-
-
       <GlobalStatsCard stats={stats} setStats={setStats} />
       
     </div>

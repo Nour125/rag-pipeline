@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { RagStats, UploadedDocument } from "../../types/rag";
 import { mapUploadDocuments, uploadPdfs } from "../../api/ragApi";
+import { saveJson } from "../../utils/storage";
+const UPLOADS_KEY = "rag_uploads_v1";
 
 type Props = {
   uploads: UploadedDocument[];
@@ -52,6 +54,12 @@ export default function UploadCard({ uploads, setUploads, stats, setStats }: Pro
       setIsUploading(false);
     }
   }
+    useEffect(() => {
+      if (stats.documentCount === 0){
+        setUploads([]);
+        saveJson(UPLOADS_KEY, []);
+      }
+    }, [stats]);
 
   return (
     <section

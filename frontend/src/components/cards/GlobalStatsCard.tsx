@@ -29,6 +29,7 @@ export default function GlobalStatsCard({ stats, setStats }: Props) {
     }
   }
 
+
   return (
     <section
       style={{
