@@ -4,6 +4,8 @@ import lmstudio as lms
 import fitz  # PyMuPDF
 from PIL import Image, ImageDraw, ImageFont
 from typing import Iterable, Optional
+from PyPDF2 import PdfReader
+
 def main():
 
     def _safe_font(size: int = 14) -> ImageFont.ImageFont:
@@ -85,9 +87,20 @@ def main():
 
     project_root = Path(__file__).resolve().parents[2]
     pdf_path = project_root / "data/foo.pdf"
+    text_output_path = project_root / "debug_layout" / "extracted_text.txt"
     layouts = preprocess_pdf(pdf_path)  # now returns List[PageLayout]
     # print(list(y for x in layouts for y in x.text_blocks))
     paths = visualize_layout(pdf_path, layouts, project_root / "debug_layout", zoom=2.0, max_pages=5)
+    # read the text frim the pdf file in pdf_path and save it also to debug_layout without using layout 
+    reader = PdfReader(pdf_path)
+
+    with open(text_output_path, "w", encoding="utf-8") as f:
+        for page in reader.pages:
+            text = page.extract_text()
+            if text:
+                f.write(text + "\n")
+
+    
     print(paths)
 
 if __name__ == "__main__":
