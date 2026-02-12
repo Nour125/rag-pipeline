@@ -7,17 +7,16 @@ import numpy as np
 from openai import OpenAI
 
 
-EMBED_MODEL_ID = "text-embedding-nomic-embed-text-v1.5"
+EMBED_MODEL_ID = "text-embedding-nomic-embed-text-v1.5" # LM Studio embedding model
 
 
 def get_lmstudio_client() -> OpenAI:
     """
-    OpenAI-kompatibler Client für LM Studio Embeddings.
-    LM Studio-Server muss auf http://localhost:1234/v1 laufen.
+    Creates and returns an OpenAI client configured to connect to the LM Studio API.
     """
     client = OpenAI(
         base_url="http://localhost:1234/v1",
-        api_key="lm-studio",  # LM Studio akzeptiert beliebigen String
+        api_key="lm-studio",  # LM 
     )
     return client
 
@@ -29,8 +28,8 @@ class EmbeddingConfig:
 
 class LMStudioEmbedder:
     """
-    Wrapper für LM Studio Embeddings-Endpoint.
-    Nutzt z.B. das Modell 'text-embedding-nomic-embed-text-v1.5'.
+    Wrapper for LM Studio Embeddings endpoint.
+    Uses the model 'text-embedding-nomic-embed-text-v1.5'.
     """
 
     def __init__(self, config: EmbeddingConfig | None = None) -> None:
@@ -49,13 +48,13 @@ class LMStudioEmbedder:
             input=texts,
         )
 
-        # response.data ist eine Liste mit Objekten, die das Feld 'embedding' enthalten
+        # 
         vectors = [item.embedding for item in response.data]
         return np.array(vectors, dtype="float32")
 
     def embed_text(self, text: str) -> np.ndarray:
         """
-        Convenience-Methode für einen einzelnen Text.
+        Embeds a single text and returns a NumPy array of shape (dim,).
         """
         arr = self.embed_texts([text])
         return arr[0]

@@ -5,9 +5,15 @@ type Props = {
   disabled?: boolean;
 };
 
+/**
+ * Renders the chat input area and sends user questions to the parent handler.
+ */
 export default function ChatComposer({ onSend, disabled }: Props) {
   const [text, setText] = useState("");
 
+  /**
+   * Validates and sends the current input, then clears the text field.
+   */
   async function send() {
     const q = text.trim();
     if (!q || disabled) return;
@@ -15,6 +21,7 @@ export default function ChatComposer({ onSend, disabled }: Props) {
     await onSend(q);
   }
 
+  // Render sticky composer with Enter-to-send support.
   return (
     <div
       style={{
@@ -32,7 +39,7 @@ export default function ChatComposer({ onSend, disabled }: Props) {
       <input
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Ask a question…"
+        placeholder="Ask a question..."
         style={{
           flex: 1,
           padding: 10,

@@ -7,10 +7,16 @@ type Props = {
   setStats: (next: RagStats) => void;
 };
 
+/**
+ * Displays global RAG statistics and allows manual refresh from the backend.
+ */
 export default function GlobalStatsCard({ stats, setStats }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Fetches the latest stats and updates local state while preserving lastIndexedAt fallback.
+   */
   async function handleRefresh() {
     setIsLoading(true);
     setError(null);
@@ -29,7 +35,7 @@ export default function GlobalStatsCard({ stats, setStats }: Props) {
     }
   }
 
-
+  // Render a compact stats card with refresh action and error feedback.
   return (
     <section
       style={{

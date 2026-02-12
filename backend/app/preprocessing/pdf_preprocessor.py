@@ -4,7 +4,6 @@ from typing import List, Dict, Any
 from app.models.image_captioner import caption_image_with_qwen_vl
 import fitz  # PyMuPDF
 
-
 @dataclass
 class TextBlock:
     page: int
@@ -13,7 +12,6 @@ class TextBlock:
     block_type: str # 0 = text, 1 = image, etc.
     wordcount: int
 
-
 @dataclass
 class ImageRegion:
     id: str
@@ -21,13 +19,11 @@ class ImageRegion:
     bbox: Any
     image_bytes: bytes
 
-
 @dataclass
 class PageLayout:
     page_number: int
     text_blocks: List[TextBlock]
     images: List[ImageRegion]
-
 
 def analyze_pdf_layout(pdf_path: Path) -> List[PageLayout]:
     """
@@ -91,7 +87,7 @@ def analyze_pdf_layout(pdf_path: Path) -> List[PageLayout]:
 
     return layouts
 
-def remove_unnecessary_elements(  # TODO: ich weiss nicht wie viel sinn das macht 
+def remove_unnecessary_elements( 
     layout_pages: List[PageLayout],
     *,
     min_words: int = 50,

@@ -12,16 +12,20 @@ from fastapi.responses import FileResponse
 from app.core.rag_pipeline import RAGPipeline
 
 router = APIRouter()
-
-# TODO For now: a global store placeholder 
 RAG_INSTANCE: RAGPipeline | None = None
 
 
 class QueryRequest(BaseModel):
+    """
+    The request body for a RAG query.
+    """
     question: str
     # settings: Optional[Dict[str, Any]] = None
 
 class RagSettingsIn(BaseModel):
+    """
+    The request body for updating RAG settings.
+    """
     llm_model: str = Field(default="qwen/qwen3-vl-4b")
     top_k: int = Field(default=5, ge=1, le=50)
     chunk_size: int = Field(default=100, ge=50, le=5000)
@@ -31,17 +35,29 @@ class RagSettingsIn(BaseModel):
 
 
 def _require_rag() -> RAGPipeline:
+    """
+    Helper to get the RAG instance or raise an error if it's not ready.
+    """
     if RAG_INSTANCE is None:
         raise HTTPException(status_code=503, detail="RAG pipeline not initialized yet.")
     return RAG_INSTANCE
 
 @router.post("/query")
 def rag_query(req: QueryRequest):
+    """
+    Endpoint to handle RAG queries. Expects a JSON body with a "question" field.
+    """
     rag = _require_rag()
     return rag.answer(req.question)
 
 @router.get("/documents/{document_id}")
 def get_document(document_id: str):
+    """
+    Endpoint to retrieve a document by its ID.
+    
+    :param document_id: The ID of the document to retrieve.
+    :type document_id: str
+    """
     # repo root
     project_root = Path(__file__).resolve().parents[3]
     raw_dir = project_root / "data" / "raw"
@@ -61,6 +77,14 @@ def get_document(document_id: str):
 
 @router.post("/upload")
 def upload_pdfs(files: List[UploadFile]= File(...),process_images: bool = Form(True)):
+    """
+    Endpoint to upload one or more PDF files. Expects multipart/form-data with file uploads.
+    
+    :param files: A list of PDF files to upload.
+    :type files: List[UploadFile]
+    :param process_images: Whether to process images within the PDFs.
+    :type process_images: bool
+    """
     rag = _require_rag()
 
     # project root: backend/app/api/routes_rag.py -> parents[3] = repo root
@@ -93,6 +117,12 @@ def upload_pdfs(files: List[UploadFile]= File(...),process_images: bool = Form(T
 
 @router.post("/settings")
 def set_settings(payload: RagSettingsIn):
+    """
+    Endpoint to update RAG settings. Expects a JSON body with the new settings.
+    
+    :param payload: The new RAG settings to apply.
+    :type payload: RagSettingsIn
+    """
     rag = _require_rag()
     
     rag.apply_settings(
@@ -108,6 +138,9 @@ def set_settings(payload: RagSettingsIn):
 
 @router.get("/stats")
 def get_stats():
+    """
+    Endpoint to retrieve document and chunk counts.
+    """
     rag = _require_rag()
     # documents count: simplest MVP = number of unique document_ids in chunks
     # If you already track documents somewhere else, use that instead.

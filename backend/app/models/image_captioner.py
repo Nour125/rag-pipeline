@@ -1,9 +1,5 @@
 import base64
-
 from openai import OpenAI
-
-
-# ---- LM Studio Client ----
 
 def get_lmstudio_client() -> OpenAI:
     """
@@ -12,7 +8,7 @@ def get_lmstudio_client() -> OpenAI:
     """
     client = OpenAI(
         base_url="http://localhost:1234/v1",
-        api_key="lm-studio",  # LM Studio akzeptiert beliebigen String als Key
+        api_key="lm-studio",  # LM Studio doesn't use real API keys, but the client requires some value here.
     )
     return client
 
@@ -87,15 +83,12 @@ def caption_image_with_qwen_vl(
         temperature=0.2,
     )
 
-    # Bei OpenAI-kompatiblem Response ist die Antwort meist:
-    # choices[0].message.content = [{"type": "output_text", "text": "..."}]
+    # LM Studio's response format can vary based on the client version. We handle both older string responses and newer structured content.
     msg_content = response.choices[0].message.content
-
+    # If it's a simple string, return it. If it's a list of parts, find the text part.
     if isinstance(msg_content, str):
-        # fallback für ältere Clients
         return msg_content.strip()
-
-    # Neuere Form: Liste von Content-Parts
+    # If it's a list of content parts, look for the text part.
     for part in msg_content:
         if isinstance(part, dict):
             if part.get("type") in ("output_text", "text", "message"):
@@ -103,5 +96,4 @@ def caption_image_with_qwen_vl(
                 if text:
                     return text.strip()
 
-    # Fallback: alles als String zusammenbauen
-    return str(msg_content)  #TODO vllt das weg machen und den msg_content returnen
+    return str(msg_content)

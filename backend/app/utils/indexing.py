@@ -43,6 +43,7 @@ class FaissVectorStore:
     ) -> FaissVectorStore:
         """
         Baut einen FAISS-Index aus einer Liste von TextChunk-Objekten.
+        wird nur in der debug_indexing.py verwendet, um aus den gechunkteten Dokumenten einen Index zu bauen.
         """
         if embedder is None:
             embedder = LMStudioEmbedder()
@@ -85,7 +86,11 @@ class FaissVectorStore:
         embedder: Optional[LMStudioEmbedder] = None,
     ) -> None:
         """
-        Fügt dem bestehenden Index neue Chunks hinzu.
+        Fügt neue Chunks zum bestehenden Index hinzu.
+        - Berechnet Embeddings für die neuen Chunks
+        - Normalisiert die Embeddings
+        - Fügt die Embeddings zum FAISS-Index hinzu
+        - Aktualisiert die Metadaten-Liste entsprechend
         """
         if embedder is None:
             embedder =  self.embedder
@@ -128,7 +133,10 @@ class FaissVectorStore:
         top_k: int = 5,
     ) -> List[Dict[str, Any]]:
         """
-        Suche über vorgegebenen Query-Embedding-Vektor.
+        Sucht im Index nach den top_k ähnlichsten Chunks basierend auf einem Query-Embedding.
+        - Normalisiert das Query-Embedding
+        - Führt die Suche im FAISS-Index durch
+        - Gibt eine Liste von Ergebnissen zurück, die den Score und die zugehörigen Metadaten enthalten
         """
         if self.index.ntotal == 0:
             return []
@@ -164,6 +172,9 @@ class FaissVectorStore:
     ) -> List[Dict[str, Any]]:
         """
         Convenience: Text → Embedding → Suche.
+        - Wandelt den Text in ein Embedding um
+        - Führt die Suche im Index basierend auf dem Embedding durch
+        - Gibt die Suchergebnisse zurück
         """
         if embedder is None:
             embedder = LMStudioEmbedder()

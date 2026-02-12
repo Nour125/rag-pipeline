@@ -5,54 +5,69 @@ type Props = {
   settings: RagSettings;
   onApply: (next: RagSettings) => void;
   defaultSettings: RagSettings;
-
 };
 
 type StylePreset = "FACTUAL" | "BALANCED" | "CREATIVE";
 type DepthPreset = "FAST" | "BALANCED" | "THOROUGH";
 
+/**
+ * Converts the selected style preset to a temperature value.
+ * Lower values produce more deterministic responses; higher values allow more variation.
+ */
 function mapStyleToTemperature(p: StylePreset): number {
   if (p === "FACTUAL") return 0.1;
   if (p === "BALANCED") return 0.3;
   return 0.7;
 }
 
+/**
+ * Converts the selected depth preset to the retrieval top_k value.
+ * Higher values fetch more chunks from the vector store before generation.
+ */
 function mapDepthToTopK(p: DepthPreset): number {
   if (p === "FAST") return 3;
   if (p === "BALANCED") return 5;
   return 10;
 }
 
+/**
+ * Converts the selected depth preset to a max token budget for the answer.
+ * Thorough mode allows longer responses.
+ */
 function mapDepthToMaxTokens(p: DepthPreset): number {
   if (p === "FAST") return 500;
   if (p === "BALANCED") return 900;
   return 1400;
 }
 
-
-
+/**
+ * Renders the settings card for model and retrieval configuration.
+ * Users can work with simple presets or open advanced controls.
+ */
 export default function InitializationCard({ settings, onApply, defaultSettings }: Props) {
+  // Available model choices shown in the model dropdown.
   const modelOptions = useMemo(
     () => [
       { id: "deepseek/deepseek-r1-0528-qwen3-8b", label: "DeepSeek R1 0528 Qwen3 8B" },
       { id: "google/gemma-3-12b", label: "Google Gemma 3 12B" },
       { id: "meta-llama-3.1-8b-instruct", label: "Meta Llama 3.1 8B Instruct" },
       { id: "openai/gpt-oss-20b", label: "OpenAI GPT OSS 20B" },
-
     ],
     []
   );
 
+  // Local editable copy of settings before pressing "Apply settings".
   const [draft, setDraft] = useState<RagSettings>(settings);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Simple presets (local UI state)
+  // Simple UI presets mapped to advanced numeric controls.
   const [stylePreset, setStylePreset] = useState<StylePreset>("BALANCED");
   const [depthPreset, setDepthPreset] = useState<DepthPreset>("BALANCED");
 
+  // Keep draft synchronized when parent settings change externally.
   useEffect(() => setDraft(settings), [settings]);
 
-  // Init presets roughly from existing settings
+  // Infer preset labels from current numeric settings so UI stays consistent.
   useEffect(() => {
     // style
     if (settings.temperature <= 0.15) setStylePreset("FACTUAL");
@@ -65,12 +80,21 @@ export default function InitializationCard({ settings, onApply, defaultSettings 
     else setDepthPreset("THOROUGH");
   }, [settings.temperature, settings.topK]);
 
+  // Used to enable/disable the Apply button and status label.
   const changed = JSON.stringify(draft) !== JSON.stringify(settings);
+
+  /**
+   * Restores all editable values to the provided default settings.
+   */
   function resetToDefault() {
     setDraft(defaultSettings);
     setStylePreset("BALANCED");
     setDepthPreset("BALANCED");
   }
+
+  /**
+   * Applies both simple presets by translating them into numeric RAG settings.
+   */
   function applySimplePreset(nextStyle: StylePreset, nextDepth: DepthPreset) {
     const nextTemp = mapStyleToTemperature(nextStyle);
     const nextTopK = mapDepthToTopK(nextDepth);
@@ -84,6 +108,7 @@ export default function InitializationCard({ settings, onApply, defaultSettings 
     }));
   }
 
+  // Render the full settings UI: model, presets, advanced controls, and apply/reset actions.
   return (
     <section style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: 12, padding: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
@@ -293,9 +318,8 @@ export default function InitializationCard({ settings, onApply, defaultSettings 
         </button>
       </div>
 
-
       <div style={{ marginTop: 8, fontSize: 12, opacity: 0.7 }}>
-        Tip: For normal use, “Answer style” and “Thoroughness” are sufficient.
+        Tip: For normal use, "Answer style" and "Thoroughness" are sufficient.
       </div>
     </section>
   );

@@ -23,6 +23,9 @@ class UploadResult:
 
 
 class RAGPipeline:
+    """
+    A simple RAG pipeline that handles PDF uploads, indexing, and question-answering.
+    """
     def __init__(self, store: FaissVectorStore, chunks: List[TextChunk], top_k: int = 5) -> None:
         self.embedder = LMStudioEmbedder()
         self.llm = LMStudioChatLLM()
@@ -36,7 +39,6 @@ class RAGPipeline:
         self.temperature = 0.2
         self.max_tokens = 2048
     
-
     def apply_settings(
         self,
         llm_model: str,
@@ -46,6 +48,9 @@ class RAGPipeline:
         temperature: float,
         max_tokens: int,
     ):
+        """
+        Apply new settings to the RAG pipeline. This can be extended to trigger re-indexing if needed.
+        """
         # Store settings (MVP: only store, no re-indexing here)
         llmCnfig = LLMConfig(model=llm_model, temperature=temperature, max_tokens=max_tokens)
 
@@ -59,6 +64,9 @@ class RAGPipeline:
         self.max_tokens = max_tokens
 
     def get_settings(self) -> dict:
+        """
+        Retrieve current settings of the RAG pipeline.
+        """
         return {
             "llm_model": self.llm.getName(),
             "top_k": self.top_k,
@@ -69,6 +77,16 @@ class RAGPipeline:
         }
 
     def answer(self, question: str) -> Dict[str, Any]:
+        """
+        Answer a question using the RAG pipeline.
+
+        
+        :param self: The RAGPipeline instance.
+        :param question: The question to answer.
+        :type question: str
+        :return: Description
+        :rtype: Dict[str, Any]
+        """
         # 1) retrieve
         hits = self.store.search_by_text(question, embedder=self.embedder, top_k=self.top_k)
 
@@ -90,7 +108,7 @@ class RAGPipeline:
                     splited=meta.get("splited"), 
                     wordcount=meta.get("wordcount")
                 )
-            
+            # expand chunk to include siblings if it's a small chunk (MVP: simple heuristic based on word count)
             expanded_content_chunks = expand_chunk_small2big_mod(hit=hited_text_chunk,chunks=self.chunks)
 
             for content_chunk in expanded_content_chunks:
@@ -100,6 +118,7 @@ class RAGPipeline:
                 )
             contextDict[content_chunk.parent_block_id] = "\n\n---\n\n".join(context_blocks)
             context_blocks = []  # reset for next hit
+            # build sources info for frontend (MVP: just return chunk metadata, frontend can fetch full content if needed)
             sources.append(
                 {
                     "rank": len(sources) + 1,
@@ -119,7 +138,7 @@ class RAGPipeline:
                 }
             )
 
-
+        # build context text for LLM
         context_text = "\n\n---\n\n".join(contextDict.values())
 
 
@@ -159,26 +178,25 @@ class RAGPipeline:
         process_images: bool = True,
     ) -> List[UploadResult]:
         """
-        Takes already-saved PDF paths, preprocesses + chunks them,
-        and updates the vector store incrementally.
+        Process and upload PDFs to the RAG pipeline. This includes preprocessing, chunking, and indexing.
         """
         results: List[UploadResult] = []
         all_new_chunks: List[TextChunk] = []
 
+        # For each PDF, preprocess and chunk, then add to store and keep track of results for response
         for pdf_name in pdf_names:
             document_id = pdf_name
             pdf_path = data_folder / pdf_name
-
-            page_layouts = preprocess_pdf(pdf_path, language="en", process_images=process_images) # TODO: language param
+            page_layouts = preprocess_pdf(pdf_path, language="en", process_images=process_images)
             doc_chunks = chunk_layout_small2big_mod(
                 document_id=document_id,
                 layout_pages=page_layouts,
                 chunk_size=self.chunk_size,
                 overlap=self.chunk_overlap,
             )
-
             all_new_chunks.extend(doc_chunks)
 
+            # prepare result info for this document
             results.append(
                 UploadResult(
                     document_id=document_id,
@@ -187,7 +205,7 @@ class RAGPipeline:
                     num_chunks=len(doc_chunks),
                 )
             )
-
+        # If we have new chunks, add them to the store and the pipeline's chunk list
         if all_new_chunks:
             # update store
             self.store.add_chunks(all_new_chunks)

@@ -2,7 +2,6 @@ import { apiClient } from "./client";
 import type { RagSettings, RagStats } from "../types/rag";
 import type { UploadedDocument } from "../types/rag";
 
-
 export type QueryRequest = {
   question: string;
   //settings: RagSettings;
@@ -25,9 +24,12 @@ export type UploadResponse = {
   total_chunks_in_store: number;
 };
 
+/**
+ * Uploads one or more PDF files to the backend and returns upload metadata.
+ */
 export async function uploadPdfs(files: File[], processImages: boolean): Promise<UploadResponse> {
   const formData = new FormData();
-  // IMPORTANT: field name must match your backend param: "files"
+  // IMPORTANT: field name must match the backend param: "files"
   for (const f of files) {
     formData.append("files", f);
   }
@@ -40,6 +42,9 @@ export async function uploadPdfs(files: File[], processImages: boolean): Promise
   return res.data as UploadResponse;
 }
 
+/**
+ * Normalizes raw backend document objects into the frontend UploadedDocument shape.
+ */
 export function mapUploadDocuments(rawDocs: any[]): UploadedDocument[] {
   const now = new Date().toISOString();
 
@@ -61,6 +66,9 @@ export function mapUploadDocuments(rawDocs: any[]): UploadedDocument[] {
   });
 }
 
+/**
+ * Sends frontend RAG settings to the backend and returns the mapped frontend settings.
+ */
 export async function setBackendSettings(settings: RagSettings): Promise<RagSettings> {
   const payload = {
     llm_model: settings.llmModel,
@@ -89,6 +97,9 @@ export async function setBackendSettings(settings: RagSettings): Promise<RagSett
   };
 }
 
+/**
+ * Fetches current RAG index statistics from the backend.
+ */
 export async function fetchStats(): Promise<RagStats> {
   const res = await apiClient.get("/rag/stats");
   const data = res.data;
@@ -100,6 +111,9 @@ export async function fetchStats(): Promise<RagStats> {
   };
 }
 
+/**
+ * Sends a user question to the RAG query endpoint and returns the generated answer with sources.
+ */
 export async function queryRag(payload: QueryRequest): Promise<QueryResponse> {
   const body = {
     question: payload.question,
@@ -116,4 +130,3 @@ export async function queryRag(payload: QueryRequest): Promise<QueryResponse> {
   const res = await apiClient.post("/rag/query", body);
   return res.data as QueryResponse;
 }
-

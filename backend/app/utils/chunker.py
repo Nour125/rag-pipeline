@@ -21,6 +21,22 @@ def chunk_layout_small2big_mod(
     chunk_size: int = 50,  # Target words per chunk
     overlap: int = 10       # Words of overlap
 ) -> List[TextChunk]:
+    """
+    Chunks text blocks from layout pages using a hybrid strategy:
+    - If a block is significantly larger than the target chunk size, it will be split into multiple chunks parents and children (METHOD A).
+    - If a block is small enough, it will be kept as is (METHOD B).
+    
+    :param document_id: Unique identifier for the document
+    :type document_id: str
+    :param layout_pages: List of PageLayout objects representing the document's layout
+    :type layout_pages: List[PageLayout]
+    :param chunk_size: Target number of words per chunk
+    :type chunk_size: int
+    :param overlap: Number of words to overlap between chunks
+    :type overlap: int
+    :return: List of TextChunk objects representing the chunked text blocks
+    :rtype: List[TextChunk]
+    """
     chunks: List[TextChunk] = []
     global_chunk_index = 0
     for page in layout_pages:
@@ -84,7 +100,14 @@ def expand_chunk_small2big_mod(
     chunks: List[TextChunk],
 ) -> List[TextChunk]:
     """
-    Expands the context based on the chunk type.
+    Expands a hit chunk to include more context based on its type:
+    - If the hit chunk is a child of a split block (METHOD A), 
+        it retrieves all sibling chunks that belong to the same parent block,
+        effectively reconstructing the full original block.
+    - If the hit chunk is a small block (METHOD B),
+        it currently returns just the hit chunk itself,
+        but the logic is in place to potentially include adjacent chunks for additional context if needed
+        (this part is currently disabled to avoid returning too much context).
     """
 
     # STRATEGY A: It was a split chunk -> Return the FULL Parent Block

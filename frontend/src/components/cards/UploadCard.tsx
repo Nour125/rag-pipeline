@@ -2,28 +2,36 @@ import { useEffect, useMemo, useState } from "react";
 import type { RagStats, UploadedDocument } from "../../types/rag";
 import { mapUploadDocuments, uploadPdfs } from "../../api/ragApi";
 import { saveJson } from "../../utils/storage";
+
 const UPLOADS_KEY = "rag_uploads_v1";
 
 type Props = {
   uploads: UploadedDocument[];
   setUploads: (next: UploadedDocument[]) => void;
-
   stats: RagStats;
   setStats: (next: RagStats) => void;
 };
 
+/**
+ * Handles PDF upload flow, optional image processing, and local upload list rendering.
+ */
 export default function UploadCard({ uploads, setUploads, stats, setStats }: Props) {
   const [processImages, setProcessImages] = useState(false);
   const [selected, setSelected] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // User-friendly label for the current file selection state.
   const selectedLabel = useMemo(() => {
     if (selected.length === 0) return "No files selected";
     if (selected.length === 1) return selected[0].name;
     return `${selected.length} files selected`;
   }, [selected]);
 
+  /**
+   * Uploads selected PDFs to the backend, appends returned documents,
+   * and refreshes aggregate stats shown in the dashboard.
+   */
   async function handleUpload() {
     if (selected.length === 0) return;
 
@@ -34,11 +42,11 @@ export default function UploadCard({ uploads, setUploads, stats, setStats }: Pro
       const res = await uploadPdfs(selected, processImages);
       const newDocs = mapUploadDocuments(res.documents);
 
-      // Append to uploads (keep previous)
+      // Append new uploads while preserving the current list.
       const nextUploads = [...uploads, ...newDocs];
       setUploads(nextUploads);
 
-      // Update stats
+      // Sync global stats after successful upload.
       setStats({
         ...stats,
         documentCount: nextUploads.length,
@@ -46,7 +54,7 @@ export default function UploadCard({ uploads, setUploads, stats, setStats }: Pro
         lastIndexedAt: new Date().toISOString(),
       });
 
-      // Clear file input selection
+      // Clear file input state after success.
       setSelected([]);
     } catch (e: any) {
       setError(e?.message ?? "Upload failed");
@@ -54,13 +62,16 @@ export default function UploadCard({ uploads, setUploads, stats, setStats }: Pro
       setIsUploading(false);
     }
   }
-    useEffect(() => {
-      if (stats.documentCount === 0){
-        setUploads([]);
-        saveJson(UPLOADS_KEY, []);
-      }
-    }, [stats]);
 
+  // If all documents are cleared globally, reset local upload cache as well.
+  useEffect(() => {
+    if (stats.documentCount === 0) {
+      setUploads([]);
+      saveJson(UPLOADS_KEY, []);
+    }
+  }, [stats, setUploads]);
+
+  // Render upload controls, status, and uploaded document history.
   return (
     <section
       style={{
@@ -80,16 +91,15 @@ export default function UploadCard({ uploads, setUploads, stats, setStats }: Pro
 
       <div style={{ marginTop: 8, fontSize: 12, opacity: 0.75 }}>{selectedLabel}</div>
       <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-          <input
-            type="checkbox"
-            checked={processImages}
-            onChange={(e) => setProcessImages(e.target.checked)}
-          />
-          <span style={{ fontSize: 13 }}>
-            Image processing (slow) — generate AI descriptions for PDF images
-          </span>
+        <input
+          type="checkbox"
+          checked={processImages}
+          onChange={(e) => setProcessImages(e.target.checked)}
+        />
+        <span style={{ fontSize: 13 }}>
+          Image processing (slow) - generate AI descriptions for PDF images
+        </span>
       </label>
-
 
       <button
         style={{
@@ -122,26 +132,27 @@ export default function UploadCard({ uploads, setUploads, stats, setStats }: Pro
           <div style={{ fontSize: 13, opacity: 0.75 }}>No documents uploaded yet.</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {uploads.slice().reverse().map((d) => (
-              <div
-                key={`${d.documentId}-${d.uploadedAt}`}
-                style={{
-                  border: "1px solid rgba(0,0,0,0.08)",
-                  borderRadius: 10,
-                  padding: 10,
-                }}
-              >
-                <div style={{ fontWeight: 600 }}>{d.filename}</div>
-                <div style={{ fontSize: 12, opacity: 0.75 }}>
-                  id: {d.documentId}
+            {uploads
+              .slice()
+              .reverse()
+              .map((d) => (
+                <div
+                  key={`${d.documentId}-${d.uploadedAt}`}
+                  style={{
+                    border: "1px solid rgba(0,0,0,0.08)",
+                    borderRadius: 10,
+                    padding: 10,
+                  }}
+                >
+                  <div style={{ fontWeight: 600 }}>{d.filename}</div>
+                  <div style={{ fontSize: 12, opacity: 0.75 }}>id: {d.documentId}</div>
+                  <div style={{ fontSize: 12, opacity: 0.75 }}>
+                    uploaded: {new Date(d.uploadedAt).toLocaleString()}
+                    {typeof d.pages === "number" ? ` - pages: ${d.pages}` : ""}
+                    {typeof d.chunkCount === "number" ? ` - chunks: ${d.chunkCount}` : ""}
+                  </div>
                 </div>
-                <div style={{ fontSize: 12, opacity: 0.75 }}>
-                  uploaded: {new Date(d.uploadedAt).toLocaleString()}
-                  {typeof d.pages === "number" ? ` • pages: ${d.pages}` : ""}
-                  {typeof d.chunkCount === "number" ? ` • chunks: ${d.chunkCount}` : ""}
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </div>

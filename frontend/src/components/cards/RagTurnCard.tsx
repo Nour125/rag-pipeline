@@ -2,6 +2,9 @@ import type { RagTurn } from "../../types/rag";
 import { marked } from "marked";
 import { useMemo, useState } from "react";
 
+/**
+ * Renders a compact pill-style label used in source cards.
+ */
 function Badge({ text }: { text: string }) {
   return (
     <span
@@ -18,6 +21,10 @@ function Badge({ text }: { text: string }) {
     </span>
   );
 }
+
+/**
+ * Reusable small action button for card-level actions.
+ */
 function SmallButton({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return (
     <button
@@ -37,23 +44,34 @@ function SmallButton({ children, onClick }: { children: React.ReactNode; onClick
   );
 }
 
+/**
+ * Displays one RAG turn with question, answer state, and ranked source cards.
+ */
 export default function RagTurnCard({ turn }: { turn: RagTurn }) {
-    const htmlContent = marked(turn.answer ?? "null");
-    const [sourcesOpen, setSourcesOpen] = useState(true);
-    const hasSources = turn.sources.length > 0;
+  // Convert markdown answer to HTML for rich text rendering.
+  const htmlContent = marked(turn.answer ?? "null");
 
-    const previewSources = useMemo(() => {
-    // show first 3 by default if collapsed
+  // Controls whether all sources are visible or only a preview subset.
+  const [sourcesOpen, setSourcesOpen] = useState(true);
+  const hasSources = turn.sources.length > 0;
+
+  // Show first 3 sources when collapsed, otherwise show all.
+  const previewSources = useMemo(() => {
     return sourcesOpen ? turn.sources : turn.sources.slice(0, 3);
   }, [sourcesOpen, turn.sources]);
 
+  /**
+   * Copies the current answer text to clipboard.
+   */
   async function copyAnswer() {
     try {
       await navigator.clipboard.writeText(turn.answer || "");
     } catch {
-      // fallback: do nothing
+      // Clipboard access can fail in restricted browser contexts.
     }
   }
+
+  // Render question bubble, answer state, and source evidence cards.
   return (
     <div style={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: 14, padding: 14 }}>
       {/* User question (right aligned) */}
@@ -85,7 +103,7 @@ export default function RagTurnCard({ turn }: { turn: RagTurn }) {
           )}
         </div>
       </div>
-      
+
       {/* Answer body */}
       <div style={{ marginTop: 6 }}>
         {turn.status === "loading" && (
@@ -100,7 +118,7 @@ export default function RagTurnCard({ turn }: { turn: RagTurn }) {
                 animation: "spin 0.8s linear infinite",
               }}
             />
-            <div>Generating answer…</div>
+            <div>Generating answer...</div>
             <style>
               {`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}
             </style>
@@ -122,14 +140,14 @@ export default function RagTurnCard({ turn }: { turn: RagTurn }) {
         )}
 
         {turn.status === "success" && (
-          <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}dangerouslySetInnerHTML={{ __html: htmlContent }}/>
+          <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: htmlContent }} />
         )}
       </div>
 
       {/* Sources */}
       <div style={{ marginTop: 14 }}>
         <div style={{ fontSize: 12, opacity: 0.65 }}>
-          Top sources ({turn.sources.length}){!sourcesOpen && turn.sources.length > 3 ? " • showing 3" : ""}
+          Top sources ({turn.sources.length}){!sourcesOpen && turn.sources.length > 3 ? " - showing 3" : ""}
         </div>
 
         {turn.status === "success" && turn.sources.length === 0 ? (
@@ -170,10 +188,10 @@ export default function RagTurnCard({ turn }: { turn: RagTurn }) {
                       </div>
 
                       <div style={{ marginTop: 4, fontSize: 12, opacity: 0.75 }}>
-                        chunk_index: <b>{s.chunkIndex ?? "—"}</b>{" "}
+                        chunk_index: <b>{s.chunkIndex ?? "-"}</b>{" "}
                         {typeof s.pageId === "number" ? (
                           <>
-                            • page: <b>{s.pageId}</b>
+                            - page: <b>{s.pageId}</b>
                           </>
                         ) : null}
                       </div>
@@ -217,6 +235,7 @@ export default function RagTurnCard({ turn }: { turn: RagTurn }) {
           </div>
         )}
       </div>
+
       {/* Timestamp */}
       <div style={{ marginTop: 10, fontSize: 11, opacity: 0.55 }}>
         {new Date(turn.createdAt).toLocaleString()}

@@ -3,22 +3,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 
-from app.api.routes_health import router as health_router
 from app.api.routes_rag import router as rag_router
 from pathlib import Path
 from app.core.rag_pipeline import RAGPipeline
 from app.models.embedder_loader import LMStudioEmbedder
-from app.preprocessing.pdf_preprocessor import preprocess_pdf
-from app.utils.chunker import TextChunk, chunk_layout_small2big_mod
 from app.utils.indexing import FaissVectorStore
 from app.api import routes_rag
 
+# FastAPI-Instanz erstellen
 app = FastAPI(
     title="RAG Pipeline Backend",
     version="0.1.0"
 )
 
-# ---- CORS SETTINGS ----
+# CORS-Middleware hinzufügen, damit das Frontend (z.B. Vite) auf die API zugreifen kann
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -32,17 +30,15 @@ app.add_middleware(
     allow_headers=["*"],          # alle Header erlaubt
 )
 
-# ---- ROUTES ----
-app.include_router(health_router, prefix="/health", tags=["health"])
+# API-Router für RAG-Funktionalitäten einbinden
 app.include_router(rag_router, prefix="/rag", tags=["rag"])
 
-
+# Einfacher Root-Endpunkt zur Überprüfung, ob die API läuft
 @app.get("/")
 def read_root():
     return {"message": "RAG Pipeline Backend is running"}
 
-
-
+# Beim Start der API: RAG-Pipeline mit leerem FAISS-Index initialisieren
 @app.on_event("startup")
 def init_rag():
     embedder = LMStudioEmbedder()

@@ -6,7 +6,10 @@ from typing import List, Dict, Any, Optional
 from openai import OpenAI
 
 def get_lmstudion_client() -> OpenAI:
-    return OpenAI(base_url="http://localhost:1234/v1", api_key="")
+    """
+    Creates and returns an OpenAI client configured to connect to the LM Studio API.
+    """
+    return OpenAI(base_url="http://localhost:1234/v1", api_key="") 
 
 @dataclass
 class LLMConfig:
@@ -20,6 +23,9 @@ class LMStudioChatLLM:
         self.config = config or LLMConfig()
 
     def chat(self, messages: List[Dict[str, str]]) -> str:
+        """
+        Sends a chat completion request to LM Studio and returns the response text.
+        """
         response = self.client.chat.completions.create(
             model=self.config.model,
             messages=messages,
