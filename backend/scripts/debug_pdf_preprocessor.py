@@ -86,11 +86,11 @@ def main():
         return saved
 
     project_root = Path(__file__).resolve().parents[2]
-    pdf_path = project_root / "data/foo.pdf"
-    text_output_path = project_root / "debug_layout" / "extracted_text.txt"
+    pdf_path = project_root / "data/LectureNotes.pdf"
+    text_output_path = project_root / "debug_layout" / "extracted_text2.txt"
     layouts = preprocess_pdf(pdf_path)  # now returns List[PageLayout]
     # print(list(y for x in layouts for y in x.text_blocks))
-    paths = visualize_layout(pdf_path, layouts, project_root / "debug_layout", zoom=2.0, max_pages=5)
+    paths = visualize_layout(pdf_path, layouts, project_root / "debug_layout", zoom=2.0, max_pages=10, draw_text_snippet=True)
     # read the text frim the pdf file in pdf_path and save it also to debug_layout without using layout 
     reader = PdfReader(pdf_path)
 

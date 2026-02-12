@@ -10,14 +10,15 @@ type Props = {
   setUploads: (next: UploadedDocument[]) => void;
   stats: RagStats;
   setStats: (next: RagStats) => void;
+  defaultSettings: RagSettings;
 };
 
-export default function RagControlPanel({ settings, setSettings, uploads, setUploads, stats, setStats }: Props) {
+export default function RagControlPanel({ settings, setSettings, uploads, setUploads, stats, setStats, defaultSettings }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <h2 style={{ margin: 0 }}>RAG Control Panel</h2>
 
-      <InitializationCard settings={settings} onApply={setSettings} />
+      <InitializationCard settings={settings} onApply={setSettings} defaultSettings={defaultSettings} />
       <UploadCard uploads={uploads} setUploads={setUploads} stats={stats} setStats={setStats} />
       <GlobalStatsCard stats={stats} setStats={setStats} />
       

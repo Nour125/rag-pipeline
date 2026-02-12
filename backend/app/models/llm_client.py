@@ -10,7 +10,7 @@ def get_lmstudion_client() -> OpenAI:
 
 @dataclass
 class LLMConfig:
-    model:str = "qwen/qwen3-vl-4b" 
+    model:str = "openai/gpt-oss-20b" 
     temperature:float = 0.2
     max_tokens:int = 2048 
 

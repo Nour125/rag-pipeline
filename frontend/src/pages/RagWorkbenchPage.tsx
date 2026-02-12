@@ -8,12 +8,12 @@ import { setBackendSettings } from "../api/ragApi";
 import { loadJson, saveJson } from "../utils/storage";
 
 const DEFAULT_SETTINGS: RagSettings = {
-  llmModel: "qwen/qwen3-vl-4b",
+  llmModel: "openai/gpt-oss-20b",
   topK: 5,
-  chunkSize: 100,
-  chunkOverlap: 20,
+  chunkSize: 50,
+  chunkOverlap: 15,
   temperature: 0.2,
-  maxTokens: 2048,
+  maxTokens: 3500,
 
 };
 const SETTINGS_KEY = "rag_settings_v1";
@@ -62,6 +62,7 @@ export default function RagWorkbenchPage() {
           setUploads={setUploads}
           stats={stats}
           setStats={setStats}
+          defaultSettings={DEFAULT_SETTINGS}
         />
       }
       right={<RagWorkspace turns={turns} setTurns={setTurns} settings={settings} />}

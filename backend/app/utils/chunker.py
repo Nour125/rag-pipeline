@@ -18,8 +18,8 @@ class TextChunk:
 def chunk_layout_small2big_mod(
     document_id: str,
     layout_pages: List[PageLayout],
-    chunk_size: int = 100,  # Target words per chunk
-    overlap: int = 20       # Words of overlap
+    chunk_size: int = 50,  # Target words per chunk
+    overlap: int = 10       # Words of overlap
 ) -> List[TextChunk]:
     chunks: List[TextChunk] = []
     global_chunk_index = 0
@@ -29,7 +29,7 @@ def chunk_layout_small2big_mod(
             
             # METHOD A: PARENT RETRIEVAL (Big Blocks)
             # If block is significantly larger than our target chunk size
-            if wordcount > (chunk_size * 1.5): 
+            if wordcount > (chunk_size * 1.2): 
                 words = block.text.split() # Simple split; consider specialized tokenizers for production
                 
                 # Sliding window with overlap

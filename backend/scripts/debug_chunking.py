@@ -1,6 +1,6 @@
 from pathlib import Path
 from app.preprocessing.pdf_preprocessor import preprocess_pdf
-from app.utils.chunker import chunk_all_pdfs_in_folder, chunk_layout_small2big_mod, chunk_pdf_document_with_preprocessing, expand_chunk_small2big_mod
+from app.utils.chunker import chunk_layout_small2big_mod, expand_chunk_small2big_mod
 
 def main():
     project_root = Path(__file__).resolve().parents[2]
@@ -16,7 +16,7 @@ def main():
     
     print(f"Total chunks: {len(chunks)}")
 
-    with open("Output4.txt", "w", encoding="utf-8") as f:
+    with open("Output5.txt", "w", encoding="utf-8") as f:
         for c in chunks:
             f.write(f"CHUNK ID: {c.id}\n")
             f.write(f"DOC: {c.document_id}\n")
@@ -28,7 +28,7 @@ def main():
             f.write(f"SPLITED: {c.splited}\n")
             f.write("-" * 50 + "\n\n")
 
-    with open("Output4_expanded.txt", "w", encoding="utf-8") as f:
+    with open("Output5_expanded.txt", "w", encoding="utf-8") as f:
         for c in expanded_chunks:
             f.write(f"CHUNK ID: {c.id}\n")
             f.write(f"DOC: {c.document_id}\n")

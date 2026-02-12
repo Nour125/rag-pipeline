@@ -21,7 +21,7 @@ export default function ChatComposer({ onSend, disabled }: Props) {
         display: "flex",
         gap: 10,
         position: "sticky",
-        bottom: 0,
+        bottom: -15,
         background: "rgba(255,255,255,0.9)",
         backdropFilter: "blur(6px)",
         padding: 12,

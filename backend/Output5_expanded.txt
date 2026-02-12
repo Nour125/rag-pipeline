@@ -1,0 +1,30 @@
+CHUNK ID: foo.pdf-p1-b2-s0
+DOC: foo.pdf
+PARENT BLOCK ID: 1002
+CONTENT:
+With the recent improvements in diagnosis and treatment of distal radius and carpal injuries, the hand surgeons’ expectations of relevant radiologic interpretation of imaging studies are heightened. Conventional radiographic examinations, as well as more sophisticated and invasive studies, have important roles in the evaluation of wrist fractures and dislocations. On
+PAGE ID: 1
+WORDCOUNT: 50
+SPLITED: True
+--------------------------------------------------
+
+CHUNK ID: foo.pdf-p1-b2-s1
+DOC: foo.pdf
+PARENT BLOCK ID: 1002
+CONTENT:
+roles in the evaluation of wrist fractures and dislocations. On the basis of physical examination results and the mechanism of injury, the onus is on the examining surgeon to pinpoint potential sites of bone or ligament disruption. After this evaluation, appropriate imaging studies appropriately performed and interpreted will help direct
+PAGE ID: 1
+WORDCOUNT: 50
+SPLITED: True
+--------------------------------------------------
+
+CHUNK ID: foo.pdf-p1-b2-s2
+DOC: foo.pdf
+PARENT BLOCK ID: 1002
+CONTENT:
+appropriate imaging studies appropriately performed and interpreted will help direct treatment and improve outcome with greater clarity and certainty.
+PAGE ID: 1
+WORDCOUNT: 19
+SPLITED: True
+--------------------------------------------------
+
