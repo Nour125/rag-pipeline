@@ -106,7 +106,7 @@ cd backend
 ```bash
 uv venv
 ```
-```
+
 
 Activate:
 
