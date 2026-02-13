@@ -86,8 +86,6 @@ If disabled:
 ---
 ## 6. Installation
 
-## 6. Installation
-
 ### Requirements
 
 - Python 3.11 recommended
