@@ -103,7 +103,7 @@ If disabled:
 cd backend
 ## 2. Create virtual environment
 
-```bash
+```
 uv venv
 ```
 
